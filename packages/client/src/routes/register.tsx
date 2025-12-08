@@ -1,13 +1,16 @@
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import { authApi, type RegisterRequest } from '../lib/auth'
+import { useTranslation } from 'react-i18next'
 import { UserPlus } from 'lucide-react'
+import {  authApi } from '../lib/auth'
+import type {RegisterRequest} from '../lib/auth';
 
 export const Route = createFileRoute('/register')({
   component: RegisterPage,
 })
 
 function RegisterPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [formData, setFormData] = useState<RegisterRequest>({
     email: '',
@@ -22,7 +25,7 @@ function RegisterPage() {
     setError('')
 
     if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters')
+      setError(t('auth.passwordMinLength'))
       return
     }
 
@@ -32,7 +35,7 @@ function RegisterPage() {
       await authApi.register(formData)
       navigate({ to: '/' })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Registration failed')
+      setError(err instanceof Error ? err.message : t('auth.registrationFailed'))
     } finally {
       setLoading(false)
     }
@@ -49,10 +52,10 @@ function RegisterPage() {
           </div>
 
           <h1 className="text-3xl font-bold text-white text-center mb-2">
-            Create Account
+            {t('auth.createAccount')}
           </h1>
           <p className="text-white/60 text-center mb-8">
-            Sign up to start organizing your tasks
+            {t('auth.signUpToOrganize')}
           </p>
 
           {error && (
@@ -64,7 +67,7 @@ function RegisterPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
-                Name
+                {t('auth.name')}
               </label>
               <input
                 type="text"
@@ -79,7 +82,7 @@ function RegisterPage() {
 
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
-                Email
+                {t('auth.email')}
               </label>
               <input
                 type="email"
@@ -93,7 +96,7 @@ function RegisterPage() {
 
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
-                Password
+                {t('auth.password')}
               </label>
               <input
                 type="password"
@@ -105,7 +108,7 @@ function RegisterPage() {
                 minLength={6}
               />
               <p className="mt-2 text-white/40 text-xs">
-                Must be at least 6 characters
+                {t('auth.passwordMinLength')}
               </p>
             </div>
 
@@ -114,18 +117,18 @@ function RegisterPage() {
               disabled={loading}
               className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all shadow-lg hover:scale-105"
             >
-              {loading ? 'Creating account...' : 'Sign Up'}
+              {loading ? t('auth.creatingAccount') : t('auth.signUp')}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-white/60 text-sm">
-              Already have an account?{' '}
+              {t('auth.alreadyHaveAccount')}{' '}
               <Link
                 to="/login"
                 className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
               >
-                Sign in
+                {t('auth.signIn')}
               </Link>
             </p>
           </div>

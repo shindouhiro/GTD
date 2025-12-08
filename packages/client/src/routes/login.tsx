@@ -1,13 +1,16 @@
-import { createFileRoute, useNavigate, Link } from '@tanstack/react-router'
+import { Link, createFileRoute, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
-import { authApi, type LoginRequest } from '../lib/auth'
+import { useTranslation } from 'react-i18next'
 import { LogIn } from 'lucide-react'
+import {  authApi } from '../lib/auth'
+import type {LoginRequest} from '../lib/auth';
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,
 })
 
 function LoginPage() {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [formData, setFormData] = useState<LoginRequest>({
     email: '',
@@ -25,7 +28,7 @@ function LoginPage() {
       await authApi.login(formData)
       navigate({ to: '/' })
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Login failed')
+      setError(err instanceof Error ? err.message : t('auth.loginFailed'))
     } finally {
       setLoading(false)
     }
@@ -42,10 +45,10 @@ function LoginPage() {
           </div>
 
           <h1 className="text-3xl font-bold text-white text-center mb-2">
-            Welcome Back
+            {t('auth.welcomeBack')}
           </h1>
           <p className="text-white/60 text-center mb-8">
-            Sign in to your account to continue
+            {t('auth.signInToAccount')}
           </p>
 
           {error && (
@@ -57,7 +60,7 @@ function LoginPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
-                Email
+                {t('auth.email')}
               </label>
               <input
                 type="email"
@@ -72,7 +75,7 @@ function LoginPage() {
 
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
-                Password
+                {t('auth.password')}
               </label>
               <input
                 type="password"
@@ -89,18 +92,18 @@ function LoginPage() {
               disabled={loading}
               className="w-full py-3 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all shadow-lg hover:scale-105"
             >
-              {loading ? 'Signing in...' : 'Sign In'}
+              {loading ? t('auth.signingIn') : t('auth.signIn')}
             </button>
           </form>
 
           <div className="mt-6 text-center">
             <p className="text-white/60 text-sm">
-              Don't have an account?{' '}
+              {t('auth.dontHaveAccount')}{' '}
               <Link
                 to="/register"
                 className="text-indigo-400 hover:text-indigo-300 font-medium transition-colors"
               >
-                Sign up
+                {t('auth.signUp')}
               </Link>
             </p>
           </div>

@@ -1,15 +1,17 @@
 import React from 'react'
+import { useTranslation } from 'react-i18next'
 import * as Icons from 'lucide-react'
-import { type Category } from '../db'
 import { cn } from '../lib/utils'
+import type {Category} from '../db';
 
 interface CategorySelectorProps {
-  categories: Category[]
+  categories: Array<Category>
   selectedCategoryId?: string
   onSelectCategory: (categoryId: string | undefined) => void
 }
 
 export function CategorySelector({ categories, selectedCategoryId, onSelectCategory }: CategorySelectorProps) {
+  const { t } = useTranslation()
   const GridIcon = Icons.Grid3x3 as React.ComponentType<{ className?: string }>
 
   return (
@@ -24,7 +26,7 @@ export function CategorySelector({ categories, selectedCategoryId, onSelectCateg
         )}
       >
         <GridIcon className="w-4 h-4" />
-        All
+        {t('home.all')}
       </button>
       {categories.map((category) => {
         const IconComponent = Icons[category.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>
@@ -76,15 +78,16 @@ export function CategoryBadge({ category, small = false }: CategoryBadgeProps) {
 }
 
 interface CategoryPickerProps {
-  categories: Category[]
+  categories: Array<Category>
   selectedCategoryId?: string
   onSelectCategory: (categoryId: string | undefined) => void
 }
 
 export function CategoryPicker({ categories, selectedCategoryId, onSelectCategory }: CategoryPickerProps) {
+  const { t } = useTranslation()
   return (
     <div className="space-y-3">
-      <label className="text-white/80 text-sm font-medium">Category (Optional)</label>
+      <label className="text-white/80 text-sm font-medium">{t('categoryPicker.categoryOptional')}</label>
       <div className="grid grid-cols-2 gap-2">
         {categories.map((category) => {
           const IconComponent = Icons[category.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>

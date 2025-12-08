@@ -1,10 +1,12 @@
-import { createFileRoute, Link, redirect } from '@tanstack/react-router'
-import { useEffect, useState, useCallback } from 'react'
-import { api, type Category } from '../api'
-import { CategoryManager } from '../components/CategoryManager'
+import { Link, createFileRoute, redirect } from '@tanstack/react-router'
+import { useCallback, useEffect, useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import { ArrowLeft } from 'lucide-react'
+import {  api } from '../api'
+import { CategoryManager } from '../components/CategoryManager'
 import { generateUUID } from '../lib/uuid'
 import { authApi } from '../lib/auth'
+import type {Category} from '../api';
 
 export const Route = createFileRoute('/categories')({
   beforeLoad: async () => {
@@ -16,7 +18,8 @@ export const Route = createFileRoute('/categories')({
 })
 
 function CategoriesPage() {
-  const [categories, setCategories] = useState<Category[]>([])
+  const { t } = useTranslation()
+  const [categories, setCategories] = useState<Array<Category>>([])
 
   const fetchCategories = useCallback(async () => {
     try {
@@ -58,12 +61,12 @@ function CategoriesPage() {
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
-            Back to Calendar
+            {t('navigation.backToCalendar')}
           </Link>
           <h1 className="text-5xl font-bold text-white tracking-tight mb-4">
-            Category <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Management</span>
+            {t('categories.title')}
           </h1>
-          <p className="text-white/60 text-lg">Create and manage your task categories</p>
+          <p className="text-white/60 text-lg">{t('categories.subtitle')}</p>
         </header>
 
         <CategoryManager

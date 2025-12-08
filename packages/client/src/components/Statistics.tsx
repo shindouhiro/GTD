@@ -1,16 +1,18 @@
 import React, { useMemo } from 'react'
-import { format, startOfWeek, endOfWeek, isSameDay, subDays, startOfDay } from 'date-fns'
-import { CheckCircle2, Circle, TrendingUp, Calendar as CalendarIcon, Target } from 'lucide-react'
+import { useTranslation } from 'react-i18next'
+import { endOfWeek, format, isSameDay, startOfDay, startOfWeek, subDays } from 'date-fns'
+import { Calendar as CalendarIcon, CheckCircle2, Circle, Target, TrendingUp } from 'lucide-react'
 import * as Icons from 'lucide-react'
-import { type Todo, type Category } from '../db'
 import { cn } from '../lib/utils'
+import type {Category, Todo} from '../db';
 
 interface StatisticsProps {
-  todos: Todo[]
-  categories: Category[]
+  todos: Array<Todo>
+  categories: Array<Category>
 }
 
 export function Statistics({ todos, categories }: StatisticsProps) {
+  const { t } = useTranslation()
   const stats = useMemo(() => {
     const total = todos.length
     const completed = todos.filter(t => t.completed).length
@@ -99,25 +101,25 @@ export function Statistics({ todos, categories }: StatisticsProps) {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
           icon={<Target className="w-6 h-6" />}
-          label="Total Tasks"
+          label={t('statistics.totalTasks')}
           value={stats.total}
           color="from-blue-500 to-cyan-500"
         />
         <StatCard
           icon={<CheckCircle2 className="w-6 h-6" />}
-          label="Completed"
+          label={t('statistics.completed')}
           value={stats.completed}
           color="from-green-500 to-emerald-500"
         />
         <StatCard
           icon={<Circle className="w-6 h-6" />}
-          label="Pending"
+          label={t('statistics.pending')}
           value={stats.pending}
           color="from-orange-500 to-amber-500"
         />
         <StatCard
           icon={<TrendingUp className="w-6 h-6" />}
-          label="Completion Rate"
+          label={t('statistics.completionRate')}
           value={`${stats.completionRate}%`}
           color="from-purple-500 to-pink-500"
         />
@@ -127,7 +129,7 @@ export function Statistics({ todos, categories }: StatisticsProps) {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         {/* Completion Rate Circle */}
         <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 shadow-xl">
-          <h3 className="text-2xl font-bold text-white mb-6">Overall Progress</h3>
+          <h3 className="text-2xl font-bold text-white mb-6">{t('statistics.overallProgress')}</h3>
           <div className="flex items-center justify-center">
             <div className="relative w-64 h-64">
               <svg className="w-full h-full transform -rotate-90">
@@ -160,25 +162,25 @@ export function Statistics({ todos, categories }: StatisticsProps) {
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center">
                 <span className="text-6xl font-bold text-white">{stats.completionRate}%</span>
-                <span className="text-white/60 mt-2">Complete</span>
+                <span className="text-white/60 mt-2">{t('statistics.complete')}</span>
               </div>
             </div>
           </div>
           <div className="mt-8 grid grid-cols-2 gap-4">
             <div className="text-center">
               <div className="text-3xl font-bold text-green-400">{stats.completed}</div>
-              <div className="text-white/60 text-sm mt-1">Completed</div>
+              <div className="text-white/60 text-sm mt-1">{t('statistics.completed')}</div>
             </div>
             <div className="text-center">
               <div className="text-3xl font-bold text-orange-400">{stats.pending}</div>
-              <div className="text-white/60 text-sm mt-1">Pending</div>
+              <div className="text-white/60 text-sm mt-1">{t('statistics.pending')}</div>
             </div>
           </div>
         </div>
 
         {/* Weekly Chart */}
         <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 shadow-xl">
-          <h3 className="text-2xl font-bold text-white mb-6">Last 7 Days</h3>
+          <h3 className="text-2xl font-bold text-white mb-6">{t('statistics.last7Days')}</h3>
           <div className="space-y-4">
             {stats.last7Days.map((day, index) => (
               <div key={index} className="space-y-2">
@@ -209,12 +211,12 @@ export function Statistics({ todos, categories }: StatisticsProps) {
             <div className="p-3 bg-indigo-500/20 rounded-xl">
               <CalendarIcon className="w-6 h-6 text-indigo-400" />
             </div>
-            <h4 className="text-lg font-semibold text-white">This Week</h4>
+            <h4 className="text-lg font-semibold text-white">{t('statistics.thisWeek')}</h4>
           </div>
           <div className="text-4xl font-bold text-white mb-2">
             {stats.thisWeekCompleted}/{stats.thisWeekTodos}
           </div>
-          <p className="text-white/60 text-sm">Tasks completed this week</p>
+          <p className="text-white/60 text-sm">{t('statistics.tasksCompletedThisWeek')}</p>
         </div>
 
         <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-6 shadow-xl">
@@ -222,10 +224,10 @@ export function Statistics({ todos, categories }: StatisticsProps) {
             <div className="p-3 bg-purple-500/20 rounded-xl">
               <TrendingUp className="w-6 h-6 text-purple-400" />
             </div>
-            <h4 className="text-lg font-semibold text-white">Daily Average</h4>
+            <h4 className="text-lg font-semibold text-white">{t('statistics.dailyAverage')}</h4>
           </div>
           <div className="text-4xl font-bold text-white mb-2">{stats.avgPerDay}</div>
-          <p className="text-white/60 text-sm">Tasks per day on average</p>
+          <p className="text-white/60 text-sm">{t('statistics.tasksPerDayOnAverage')}</p>
         </div>
 
         <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-6 shadow-xl">
@@ -233,15 +235,15 @@ export function Statistics({ todos, categories }: StatisticsProps) {
             <div className="p-3 bg-pink-500/20 rounded-xl">
               <CheckCircle2 className="w-6 h-6 text-pink-400" />
             </div>
-            <h4 className="text-lg font-semibold text-white">Best Day</h4>
+            <h4 className="text-lg font-semibold text-white">{t('statistics.bestDay')}</h4>
           </div>
           <div className="text-2xl font-bold text-white mb-2">
             {stats.bestDay.total > 0 ? format(stats.bestDay.date, 'MMM d, yyyy') : 'N/A'}
           </div>
           <p className="text-white/60 text-sm">
             {stats.bestDay.total > 0
-              ? `${stats.bestDay.completed}/${stats.bestDay.total} tasks completed`
-              : 'No tasks yet'}
+              ? `${stats.bestDay.completed}/${stats.bestDay.total} ${t('statistics.tasksCompletedThisWeek')}`
+              : t('statistics.noTasksYet')}
           </p>
         </div>
       </div>
@@ -249,7 +251,7 @@ export function Statistics({ todos, categories }: StatisticsProps) {
       {/* Category Statistics */}
       {stats.categoryStats.length > 0 && (
         <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 shadow-xl">
-          <h3 className="text-2xl font-bold text-white mb-6">Tasks by Category</h3>
+          <h3 className="text-2xl font-bold text-white mb-6">{t('statistics.tasksByCategory')}</h3>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {stats.categoryStats.map(({ category, total, completed, pending, completionRate }) => {
@@ -269,14 +271,14 @@ export function Statistics({ todos, categories }: StatisticsProps) {
                     </div>
                     <div className="flex-1 min-w-0">
                       <h4 className="text-white font-semibold truncate">{category.name}</h4>
-                      <p className="text-white/60 text-sm">{total} tasks</p>
+                      <p className="text-white/60 text-sm">{total} {t('statistics.tasks')}</p>
                     </div>
                   </div>
 
                   {/* Progress Bar */}
                   <div className="space-y-2">
                     <div className="flex items-center justify-between text-sm">
-                      <span className="text-white/80">Progress</span>
+                      <span className="text-white/80">{t('statistics.progress')}</span>
                       <span className="text-white font-semibold">{completionRate}%</span>
                     </div>
                     <div className="relative h-2 bg-white/10 rounded-full overflow-hidden">
@@ -294,11 +296,11 @@ export function Statistics({ todos, categories }: StatisticsProps) {
                   <div className="grid grid-cols-2 gap-3 mt-4">
                     <div className="bg-green-500/10 rounded-lg p-2 text-center">
                       <div className="text-green-400 font-bold text-lg">{completed}</div>
-                      <div className="text-white/60 text-xs">Completed</div>
+                      <div className="text-white/60 text-xs">{t('statistics.completed')}</div>
                     </div>
                     <div className="bg-orange-500/10 rounded-lg p-2 text-center">
                       <div className="text-orange-400 font-bold text-lg">{pending}</div>
-                      <div className="text-white/60 text-xs">Pending</div>
+                      <div className="text-white/60 text-xs">{t('statistics.pending')}</div>
                     </div>
                   </div>
                 </div>
@@ -314,7 +316,7 @@ export function Statistics({ todos, categories }: StatisticsProps) {
                   <TrendingUp className="w-6 h-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h4 className="text-white/80 text-sm font-medium">Most Productive Category</h4>
+                  <h4 className="text-white/80 text-sm font-medium">{t('statistics.mostProductiveCategory')}</h4>
                   <div className="flex items-center gap-2 mt-1">
                     {(() => {
                       const IconComponent = Icons[stats.mostProductiveCategory.category.icon as keyof typeof Icons] as React.ComponentType<{ className?: string }>

@@ -1,14 +1,17 @@
 import React, { useRef } from 'react'
-import { Download, Upload, Trash2, Info } from 'lucide-react'
-import { api, type Todo } from '../api'
+import { useTranslation } from 'react-i18next'
+import { Download, Info, Trash2, Upload } from 'lucide-react'
+import {  api } from '../api'
 import { cn } from '../lib/utils'
+import type {Todo} from '../api';
 
 interface DataToolbarProps {
-  todos: Todo[]
+  todos: Array<Todo>
   onRefresh?: () => void
 }
 
 export function DataToolbar({ todos, onRefresh }: DataToolbarProps) {
+  const { t } = useTranslation()
   const fileInputRef = useRef<HTMLInputElement>(null)
 
   // 导出数据为 JSON
@@ -34,11 +37,11 @@ export function DataToolbar({ todos, onRefresh }: DataToolbarProps) {
     reader.onload = async (e) => {
       try {
         const content = e.target?.result as string
-        const importedTodos = JSON.parse(content) as Todo[]
+        const importedTodos = JSON.parse(content) as Array<Todo>
 
         // 验证数据格式
         if (!Array.isArray(importedTodos)) {
-          alert('Invalid file format')
+          alert(t('dataToolbar.invalidFileFormat'))
           return
         }
 
@@ -54,10 +57,10 @@ export function DataToolbar({ todos, onRefresh }: DataToolbarProps) {
 
         onRefresh?.()
 
-        alert(`Successfully imported ${validTodos.length} todos!`)
+        alert(t('dataToolbar.importSuccess', { count: validTodos.length }))
       } catch (error) {
         console.error('Import error:', error)
-        alert('Failed to import data. Please check the file format.')
+        alert(t('dataToolbar.importFailed'))
       }
     }
     reader.readAsText(file)
@@ -71,18 +74,18 @@ export function DataToolbar({ todos, onRefresh }: DataToolbarProps) {
   // 清空所有数据
   const handleClearAll = async () => {
     if (todos.length === 0) {
-      alert('No data to clear')
+      alert(t('dataToolbar.noDataToClear'))
       return
     }
 
     const confirmed = window.confirm(
-      `Are you sure you want to delete all ${todos.length} todos? This action cannot be undone.`
+      t('dataToolbar.clearAllConfirm', { count: todos.length })
     )
 
     if (confirmed) {
       await api.todos.clear()
       onRefresh?.()
-      alert('All data cleared successfully')
+      alert(t('dataToolbar.allDataCleared'))
     }
   }
 
@@ -100,11 +103,11 @@ export function DataToolbar({ todos, onRefresh }: DataToolbarProps) {
         <div className="flex items-center gap-3 text-white/80">
           <Info className="w-5 h-5 text-indigo-400" />
           <div className="text-sm">
-            <span className="font-semibold text-white">{stats.total}</span> total
+            <span className="font-semibold text-white">{stats.total}</span> {t('dataToolbar.total')}
             <span className="mx-2">•</span>
-            <span className="font-semibold text-green-400">{stats.completed}</span> done
+            <span className="font-semibold text-green-400">{stats.completed}</span> {t('dataToolbar.done')}
             <span className="mx-2">•</span>
-            <span className="font-semibold text-yellow-400">{stats.pending}</span> pending
+            <span className="font-semibold text-yellow-400">{stats.pending}</span> {t('dataToolbar.pending')}
           </div>
         </div>
 
@@ -118,10 +121,10 @@ export function DataToolbar({ todos, onRefresh }: DataToolbarProps) {
               "bg-indigo-500/20 hover:bg-indigo-500/30 text-indigo-300 border border-indigo-500/30",
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
-            title="Export all todos as JSON"
+            title={t('dataToolbar.exportAllTodos')}
           >
             <Download className="w-4 h-4" />
-            <span className="text-sm font-medium">Export</span>
+            <span className="text-sm font-medium">{t('dataToolbar.export')}</span>
           </button>
 
           <button
@@ -130,10 +133,10 @@ export function DataToolbar({ todos, onRefresh }: DataToolbarProps) {
               "flex-1 sm:flex-none flex items-center gap-2 px-4 py-2 rounded-xl transition-all",
               "bg-purple-500/20 hover:bg-purple-500/30 text-purple-300 border border-purple-500/30"
             )}
-            title="Import todos from JSON file"
+            title={t('dataToolbar.importTodos')}
           >
             <Upload className="w-4 h-4" />
-            <span className="text-sm font-medium">Import</span>
+            <span className="text-sm font-medium">{t('dataToolbar.import')}</span>
           </button>
           <input
             ref={fileInputRef}
@@ -151,10 +154,10 @@ export function DataToolbar({ todos, onRefresh }: DataToolbarProps) {
               "bg-red-500/20 hover:bg-red-500/30 text-red-300 border border-red-500/30",
               "disabled:opacity-50 disabled:cursor-not-allowed"
             )}
-            title="Clear all todos"
+            title={t('dataToolbar.clearAllTodos')}
           >
             <Trash2 className="w-4 h-4" />
-            <span className="text-sm font-medium">Clear</span>
+            <span className="text-sm font-medium">{t('dataToolbar.clear')}</span>
           </button>
         </div>
       </div>

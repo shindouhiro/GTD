@@ -1,8 +1,10 @@
-import { createFileRoute, Link, redirect } from '@tanstack/react-router'
+import { Link, createFileRoute, redirect } from '@tanstack/react-router'
 import { useEffect, useState } from 'react'
-import { api, type Todo, type Category } from '../api'
+import { useTranslation } from 'react-i18next'
+import {   api } from '../api'
 import { Statistics } from '../components/Statistics'
 import { authApi } from '../lib/auth'
+import type {Category, Todo} from '../api';
 
 export const Route = createFileRoute('/statistics')({
   beforeLoad: async () => {
@@ -14,8 +16,9 @@ export const Route = createFileRoute('/statistics')({
 })
 
 function StatisticsPage() {
-  const [todos, setTodos] = useState<Todo[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
+  const { t } = useTranslation()
+  const [todos, setTodos] = useState<Array<Todo>>([])
+  const [categories, setCategories] = useState<Array<Category>>([])
 
   useEffect(() => {
     const fetchData = async () => {
@@ -54,12 +57,12 @@ function StatisticsPage() {
                 d="M15 19l-7-7 7-7"
               />
             </svg>
-            Back to Calendar
+            {t('navigation.backToCalendar')}
           </Link>
           <h1 className="text-5xl font-bold text-white mb-4 tracking-tight">
-            Task <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-400 to-purple-400">Statistics</span>
+            {t('statistics.title')}
           </h1>
-          <p className="text-white/60 text-lg">Track your productivity and progress</p>
+          <p className="text-white/60 text-lg">{t('statistics.subtitle')}</p>
         </header>
 
         <Statistics todos={todos} categories={categories} />

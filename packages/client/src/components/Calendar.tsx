@@ -1,28 +1,29 @@
 import React, { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 import {
-  format,
-  startOfMonth,
-  endOfMonth,
-  startOfWeek,
-  endOfWeek,
-  eachDayOfInterval,
-  isSameMonth,
-  isSameDay,
   addMonths,
-  subMonths,
+  eachDayOfInterval,
+  endOfMonth,
+  endOfWeek,
+  format,
+  isSameDay,
+  isSameMonth,
   isToday,
+  startOfMonth,
+  startOfWeek,
+  subMonths,
 } from 'date-fns'
-import { ChevronLeft, ChevronRight, Plus, Check, Trash2 } from 'lucide-react'
+import { Check, ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react'
 import { cn } from '../lib/utils'
-import { type Todo, type Category } from '../db'
-import { CategorySelector, CategoryBadge, CategoryPicker } from './CategoryComponents'
+import { CategoryBadge, CategoryPicker, CategorySelector } from './CategoryComponents'
 import { Modal } from './Modal'
+import type {Category, Todo} from '../db';
 
 export type { Todo }
 
 interface CalendarProps {
-  todos: Todo[]
-  categories: Category[]
+  todos: Array<Todo>
+  categories: Array<Category>
   onAddTodo: (date: Date, text: string, categoryId?: string) => void
   onToggleTodo: (id: string) => void
   onDeleteTodo: (id: string) => void
@@ -30,6 +31,7 @@ interface CalendarProps {
 
 
 export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteTodo }: CalendarProps) {
+  const { t } = useTranslation()
   const [currentMonth, setCurrentMonth] = useState(new Date())
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [newTodoText, setNewTodoText] = useState('')
@@ -47,7 +49,15 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
     end: endDate,
   })
 
-  const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat']
+  const weekDays = [
+    t('calendar.weekDays.sun'),
+    t('calendar.weekDays.mon'),
+    t('calendar.weekDays.tue'),
+    t('calendar.weekDays.wed'),
+    t('calendar.weekDays.thu'),
+    t('calendar.weekDays.fri'),
+    t('calendar.weekDays.sat')
+  ]
 
   const handlePrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1))
   const handleNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1))
@@ -82,7 +92,7 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
       {/* Category Filter */}
       <div className="max-w-6xl mx-auto">
         <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl p-4 shadow-xl">
-          <h3 className="text-base font-semibold text-white mb-3">Filter by Category</h3>
+          <h3 className="text-base font-semibold text-white mb-3">{t('home.filterByCategory')}</h3>
           <CategorySelector
             categories={categories}
             selectedCategoryId={selectedCategoryFilter}
@@ -184,7 +194,7 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
         )}>
           <div className="h-full flex flex-col">
             <h3 className="text-2xl font-bold text-white mb-6">
-              {selectedDate ? format(selectedDate, 'EEEE, MMMM do') : 'Select a date'}
+              {selectedDate ? format(selectedDate, 'EEEE, MMMM do') : t('home.selectDate')}
             </h3>
 
             {selectedDate ? (
@@ -195,7 +205,7 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
                       type="text"
                       value={newTodoText}
                       onChange={(e) => setNewTodoText(e.target.value)}
-                      placeholder="Add a new task..."
+                      placeholder={t('home.addNewTask')}
                       className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 pr-12 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
                     />
                     <button
@@ -217,7 +227,7 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
                 <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar max-h-[500px]">
                   {selectedDateTodos.length === 0 ? (
                     <div className="text-center text-white/40 py-8">
-                      No tasks for this day
+                      {t('home.noTasksForDay')}
                     </div>
                   ) : (
                     selectedDateTodos.map((todo) => {
@@ -267,7 +277,7 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
               </>
             ) : (
               <div className="flex-1 flex items-center justify-center text-white/40 text-center">
-                <p>Select a date to view or add tasks</p>
+                <p>{t('home.selectDate')}</p>
               </div>
             )}
           </div>
@@ -289,7 +299,7 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={selectedDate ? `Add Task - ${format(selectedDate, 'MMM d')}` : 'Add Task'}
+        title={selectedDate ? t('calendar.addTaskForDate', { date: format(selectedDate, 'MMM d') }) : t('modal.addTask')}
       >
         <form onSubmit={handleAddTodo} className="space-y-4">
           <div className="relative">
@@ -297,14 +307,14 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
               type="text"
               value={newTodoText}
               onChange={(e) => setNewTodoText(e.target.value)}
-              placeholder="What needs to be done?"
+              placeholder={t('home.whatNeedsToBeDone')}
               className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
               autoFocus
             />
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-white/60 mb-2">Category</label>
+            <label className="block text-sm font-medium text-white/60 mb-2">{t('categoryPicker.category')}</label>
             <CategoryPicker
               categories={categories}
               selectedCategoryId={selectedCategoryForNewTodo}
@@ -318,7 +328,7 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
               disabled={!newTodoText.trim()}
               className="w-full py-3 bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all shadow-lg"
             >
-              Add Task
+              {t('home.addTask')}
             </button>
           </div>
         </form>

@@ -21,8 +21,8 @@ RUN pnpm --filter @todo-app/client build
 FROM base AS deployer
 WORKDIR /app
 COPY --from=builder /app /app
-# pnpm deploy creates a standalone package directory with only production dependencies
-RUN pnpm --filter @todo-app/server --prod deploy /app/deployed-server
+# Use --legacy flag for pnpm v10+ to allow traditional deployment
+RUN pnpm --filter @todo-app/server deploy --prod --legacy /app/deployed-server
 
 # 4. Final production image (Small & Secure)
 FROM node:20-slim AS runner

@@ -12,7 +12,25 @@
 - 🐳 **Docker 极速部署**：采用多阶段构建与 `pnpm deploy` 技术，镜像体积从 1.9GB 极致缩减至约 200MB。
 - 🛡️ **安全认证**：基于 JWT 的用户认证体系，保障数据安全。
 
+## 📸 项目预览
+
+<div align="center">
+  <img src="https://i0.hdslb.com/bfs/openplatform/174f18a1842f3279d4623abd3d34044782074b05.png" width="800" alt="日历视图" />
+  <p><i>智能日历视图 - 为您呈现清晰的日程安排</i></p>
+  
+  <br />
+  
+  <img src="https://i0.hdslb.com/bfs/openplatform/00af6f4f722630d955520616cda617a5555e58a2.png" width="800" alt="表格视图" />
+  <p><i>列表表格视图 - 高效管理繁杂任务</i></p>
+  
+  <br />
+  
+  <img src="https://i0.hdslb.com/bfs/openplatform/105472907c134172351d6fc0ee33dd088163e331.png" width="800" alt="移动端适配" />
+  <p><i>统计分析与移动端适配 - 随时随地把控进度</i></p>
+</div>
+
 ## 📁 项目结构
+
 
 ```
 calendar-todo-app/

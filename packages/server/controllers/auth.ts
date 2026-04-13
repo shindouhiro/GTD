@@ -45,12 +45,12 @@ router.post('/register', async (req: Request, res: Response) => {
 
     // Create default categories for new user
     const defaultCategories = [
-      { id: `${userId}-work`, name: 'Work', icon: 'Briefcase', color: '#3b82f6', userId },
-      { id: `${userId}-personal`, name: 'Personal', icon: 'User', color: '#10b981', userId },
-      { id: `${userId}-shopping`, name: 'Shopping', icon: 'ShoppingCart', color: '#f59e0b', userId },
-      { id: `${userId}-health`, name: 'Health', icon: 'Heart', color: '#ef4444', userId },
-      { id: `${userId}-study`, name: 'Study', icon: 'BookOpen', color: '#8b5cf6', userId },
-      { id: `${userId}-home`, name: 'Home', icon: 'Home', color: '#ec4899', userId },
+      { id: `${userId}-work`, name: '工作', icon: 'Briefcase', color: '#3b82f6', userId },
+      { id: `${userId}-personal`, name: '个人', icon: 'User', color: '#10b981', userId },
+      { id: `${userId}-shopping`, name: '购物', icon: 'ShoppingCart', color: '#f59e0b', userId },
+      { id: `${userId}-health`, name: '健康', icon: 'Heart', color: '#ef4444', userId },
+      { id: `${userId}-study`, name: '学习', icon: 'BookOpen', color: '#8b5cf6', userId },
+      { id: `${userId}-home`, name: '生活', icon: 'Home', color: '#ec4899', userId },
     ];
 
     const insertCategory = db.prepare(

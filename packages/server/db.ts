@@ -179,6 +179,29 @@ if (count.count === 0) {
   });
 
   insertMany(defaultCategories);
+} else {
+  // Update existing English categories to Chinese for existing users
+  const translationMap: Record<string, string> = {
+    'Work': '工作',
+    'Personal': '个人',
+    'Shopping': '购物',
+    'Health': '健康',
+    'Study': '学习',
+    'Home': '生活'
+  };
+
+  const updateStmt = db.prepare('UPDATE categories SET name = ? WHERE name = ?');
+  
+  try {
+    db.transaction(() => {
+      for (const [english, chinese] of Object.entries(translationMap)) {
+        updateStmt.run(chinese, english);
+      }
+    })();
+    console.log('Categories translated to Chinese successfully.');
+  } catch (error) {
+    console.error('Failed to translate existing categories:', error);
+  }
 }
 
 export default db;

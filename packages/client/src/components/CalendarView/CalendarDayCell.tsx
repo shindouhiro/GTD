@@ -1,7 +1,7 @@
 import { format, isSameDay, isSameMonth, isToday } from 'date-fns'
 import { HolidayUtil, Solar } from 'lunar-javascript'
-import { cn } from '../../lib/utils'
-import type { Todo } from '../../db'
+import { cn } from '@/lib/utils'
+import type { Todo } from '@/db'
 
 interface CalendarDayCellProps {
   day: Date

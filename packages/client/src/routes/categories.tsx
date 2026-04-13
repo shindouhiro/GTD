@@ -1,12 +1,12 @@
-import type { Category } from '../api'
+import type { Category } from '@/api'
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
 import { ArrowLeft } from 'lucide-react'
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { api } from '../api'
-import { CategoryManager } from '../components/CategoryManager'
-import { authApi } from '../lib/auth'
-import { generateUUID } from '../lib/uuid'
+import { api } from '@/api'
+import { CategoryManager } from '@/components/CategoryManager'
+import { authApi } from '@/lib/auth'
+import { generateUUID } from '@/lib/uuid'
 
 export const Route = createFileRoute('/categories')({
   beforeLoad: async () => {

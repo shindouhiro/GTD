@@ -1,7 +1,7 @@
-import type { Category, Todo } from '../api'
+import type { Category, Todo } from '@/api'
 import { useCallback, useEffect, useState } from 'react'
-import { api } from '../api'
-import { generateUUID } from '../lib/uuid'
+import { api } from '@/api'
+import { generateUUID } from '@/lib/uuid'
 
 export function useTodos() {
   const [todos, setTodos] = useState<Array<Todo>>([])

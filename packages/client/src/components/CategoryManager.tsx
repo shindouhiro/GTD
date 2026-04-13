@@ -1,9 +1,9 @@
-import type { Category } from '../api'
+import type { Category } from '@/api'
 import * as Icons from 'lucide-react'
 import { Check, Edit2, Plus, Trash2 } from 'lucide-react'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../lib/utils'
+import { cn } from '@/lib/utils'
 
 interface CategoryManagerProps {
   categories: Array<Category>

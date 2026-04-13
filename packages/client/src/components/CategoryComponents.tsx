@@ -1,8 +1,8 @@
-import type { Category } from '../db'
+import type { Category } from '@/db'
 import * as Icons from 'lucide-react'
 import React from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../lib/utils'
+import { cn } from '@/lib/utils'
 
 interface CategorySelectorProps {
   categories: Array<Category>

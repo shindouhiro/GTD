@@ -1,10 +1,10 @@
-import type { Category, Todo } from '../../api'
+import type { Category, Todo } from '@/api'
 import { format } from 'date-fns'
 import { zhCN } from 'date-fns/locale'
 import { Check, CheckSquare, Square, Trash2 } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../../lib/utils'
-import { useTaskSelection } from '../../hooks/useTaskSelection'
+import { cn } from '@/lib/utils'
+import { useTaskSelection } from '@/hooks/useTaskSelection'
 
 interface TaskTableProps {
   todos: Todo[]

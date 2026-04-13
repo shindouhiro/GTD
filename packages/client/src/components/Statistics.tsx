@@ -1,11 +1,11 @@
-import type { Category, Todo } from '../db'
+import type { Category, Todo } from '@/db'
 import { endOfWeek, format, isSameDay, startOfDay, startOfWeek, subDays } from 'date-fns'
 import { enUS, zhCN } from 'date-fns/locale'
 import { Calendar as CalendarIcon, CheckCircle2, Circle, Target, TrendingUp } from 'lucide-react'
 import * as Icons from 'lucide-react'
 import React, { useMemo } from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../lib/utils'
+import { cn } from '@/lib/utils'
 
 interface StatisticsProps {
   todos: Array<Todo>

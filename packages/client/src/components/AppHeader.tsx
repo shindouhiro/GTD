@@ -1,6 +1,6 @@
 import { Link } from '@tanstack/react-router'
 import { useTranslation } from 'react-i18next'
-import { authApi } from '../lib/auth'
+import { authApi } from '@/lib/auth'
 
 export function AppHeader() {
   const { t } = useTranslation()

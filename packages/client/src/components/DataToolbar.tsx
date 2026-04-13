@@ -1,9 +1,9 @@
-import type { Todo } from '../api'
+import type { Todo } from '@/api'
 import { Download, Info, Trash2, Upload } from 'lucide-react'
 import React, { useRef } from 'react'
 import { useTranslation } from 'react-i18next'
-import { api } from '../api'
-import { cn } from '../lib/utils'
+import { api } from '@/api'
+import { cn } from '@/lib/utils'
 
 interface DataToolbarProps {
   todos: Array<Todo>

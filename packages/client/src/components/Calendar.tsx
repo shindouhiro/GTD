@@ -3,12 +3,12 @@ import { enUS, zhCN } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { CategoryPicker, CategorySelector } from './CategoryComponents'
-import { Modal } from './Modal'
-import { CalendarDayCell } from './CalendarView/CalendarDayCell'
-import { DaySidePanel } from './CalendarView/DaySidePanel'
-import { useCalendar } from '../hooks/useCalendar'
-import type { Category, Todo } from '../db'
+import { CategoryPicker, CategorySelector } from '@/components/CategoryComponents'
+import { Modal } from '@/components/Modal'
+import { CalendarDayCell } from '@/components/CalendarView/CalendarDayCell'
+import { DaySidePanel } from '@/components/CalendarView/DaySidePanel'
+import { useCalendar } from '@/hooks/useCalendar'
+import type { Category, Todo } from '@/db'
 
 export type { Todo }
 

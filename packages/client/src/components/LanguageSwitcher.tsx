@@ -1,7 +1,7 @@
 import { ChevronDown, Globe } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../lib/utils'
+import { cn } from '@/lib/utils'
 
 const languages = [
   { code: 'en', name: 'English', flag: '🇺🇸' },

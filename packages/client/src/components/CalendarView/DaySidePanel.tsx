@@ -3,9 +3,9 @@ import { type Locale, format } from 'date-fns'
 import { Check, Plus, Trash2 } from 'lucide-react'
 import { Solar } from 'lunar-javascript'
 import { useTranslation } from 'react-i18next'
-import { cn } from '../../lib/utils'
-import { CategoryBadge, CategoryPicker } from '../CategoryComponents'
-import type { Category, Todo } from '../../db'
+import { cn } from '@/lib/utils'
+import { CategoryBadge, CategoryPicker } from '@/components/CategoryComponents'
+import type { Category, Todo } from '@/db'
 
 interface DaySidePanelProps {
   selectedDate: Date | null

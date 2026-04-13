@@ -1,12 +1,12 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import { useState } from 'react'
-import { AppHeader } from '../components/AppHeader'
-import { Calendar } from '../components/Calendar'
-import { DataToolbar } from '../components/DataToolbar'
-import { TaskTable } from '../components/TaskView/TaskTable'
-import { type ViewMode, useViewOptions, ViewSwitcher } from '../components/ViewSwitcher'
-import { useTodos } from '../hooks/useTodos'
-import { authApi } from '../lib/auth'
+import { AppHeader } from '@/components/AppHeader'
+import { Calendar } from '@/components/Calendar'
+import { DataToolbar } from '@/components/DataToolbar'
+import { TaskTable } from '@/components/TaskView/TaskTable'
+import { type ViewMode, useViewOptions, ViewSwitcher } from '@/components/ViewSwitcher'
+import { useTodos } from '@/hooks/useTodos'
+import { authApi } from '@/lib/auth'
 
 export const Route = createFileRoute('/')({
   beforeLoad: async () => {

@@ -1,9 +1,9 @@
-import type { LoginRequest } from '../lib/auth'
+import type { LoginRequest } from '@/lib/auth'
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
 import { LogIn } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { authApi } from '../lib/auth'
+import { authApi } from '@/lib/auth'
 
 export const Route = createFileRoute('/login')({
   component: LoginPage,

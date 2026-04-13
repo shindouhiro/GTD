@@ -5,64 +5,65 @@ onlyBuiltDependencies:
 packages:
   - "packages/*"
 
-catalog:
+catalogs:
+  default:
   # Core
-  react: ^19.2.0
-  react-dom: ^19.2.0
-  typescript: ^6.0.2
+    react: ^19.2.0
+    react-dom: ^19.2.0
+    typescript: ^6.0.2
 
-  # Tooling
-  vite: ^7.1.7
-  vitest: ^3.0.8
-  tsx: ^4.21.0
-  prettier: ^3.5.3
-  eslint: ^9.21.0
-  "@antfu/eslint-config": ^4.3.0
-  "@eslint-react/eslint-plugin": ^1.30.1
-  "eslint-plugin-react-hooks": ^5.2.0
-  "eslint-plugin-react-refresh": ^0.4.19
-  "eslint-plugin-format": ^1.0.1
-  "@vitejs/plugin-react": ^4.3.4
-  "@tailwindcss/vite": ^4.0.12
-  tailwindcss: ^4.0.12
+    # Tooling
+    vite: ^7.1.7
+    vitest: ^3.0.8
+    tsx: ^4.21.0
+    prettier: ^3.5.3
+    eslint: ^9.21.0
+    "@antfu/eslint-config": ^4.3.0
+    "@eslint-react/eslint-plugin": ^1.30.1
+    "eslint-plugin-react-hooks": ^5.2.0
+    "eslint-plugin-react-refresh": ^0.4.19
+    "eslint-plugin-format": ^1.0.1
+    "@vitejs/plugin-react": ^4.3.4
+    "@tailwindcss/vite": ^4.0.12
+    tailwindcss: ^4.0.12
 
-  # Libraries (Client)
-  "@tanstack/react-router": ^1.132.0
-  "@tanstack/react-router-devtools": ^1.132.0
-  "@tanstack/router-plugin": ^1.132.0
-  "@tanstack/react-devtools": ^0.7.0
-  "@tanstack/devtools-vite": ^0.3.11
-  i18next: ^25.7.1
-  i18next-browser-languagedetector: ^8.2.0
-  react-i18next: ^16.4.0
-  clsx: ^2.1.1
-  tailwind-merge: ^3.4.0
-  lucide-react: ^0.545.0
-  date-fns: ^4.1.0
-  web-vitals: ^5.1.0
-  lunar-javascript: ^1.7.7
+    # Libraries (Client)
+    "@tanstack/react-router": ^1.132.0
+    "@tanstack/react-router-devtools": ^1.132.0
+    "@tanstack/router-plugin": ^1.132.0
+    "@tanstack/react-devtools": ^0.7.0
+    "@tanstack/devtools-vite": ^0.3.11
+    i18next: ^25.7.1
+    i18next-browser-languagedetector: ^8.2.0
+    react-i18next: ^16.4.0
+    clsx: ^2.1.1
+    tailwind-merge: ^3.4.0
+    lucide-react: ^0.545.0
+    date-fns: ^4.1.0
+    web-vitals: ^5.1.0
+    lunar-javascript: ^1.7.7
 
-  # Libraries (Server)
-  express: ^5.2.1
-  cors: ^2.8.5
-  better-sqlite3: ^12.5.0
-  bcrypt: ^5.1.1
-  jsonwebtoken: ^9.0.2
+    # Libraries (Server)
+    express: ^5.2.1
+    cors: ^2.8.5
+    better-sqlite3: ^12.5.0
+    bcrypt: ^5.1.1
+    jsonwebtoken: ^9.0.2
 
-  # Testing
-  "@testing-library/dom": ^10.4.0
-  "@testing-library/react": ^16.2.0
-  jsdom: ^27.0.0
+    # Testing
+    "@testing-library/dom": ^10.4.0
+    "@testing-library/react": ^16.2.0
+    jsdom: ^27.0.0
 
-  # Types
-  "@types/node": ^22.13.10
-  "@types/react": ^19.2.0
-  "@types/react-dom": ^19.2.0
-  "@types/express": ^5.0.6
-  "@types/cors": ^2.8.19
-  "@types/better-sqlite3": ^7.6.13
-  "@types/bcrypt": ^5.0.2
-  "@types/jsonwebtoken": ^9.0.7
+    # Types
+    "@types/node": ^22.13.10
+    "@types/react": ^19.2.0
+    "@types/react-dom": ^19.2.0
+    "@types/express": ^5.0.6
+    "@types/cors": ^2.8.19
+    "@types/better-sqlite3": ^7.6.13
+    "@types/bcrypt": ^5.0.2
+    "@types/jsonwebtoken": ^9.0.7
 
-  # Misc
-  terser: ^5.39.0
+    # Misc
+    terser: ^5.39.0

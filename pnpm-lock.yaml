@@ -108,6 +108,9 @@ catalogs:
     lucide-react:
       specifier: ^0.545.0
       version: 0.545.0
+    lunar-javascript:
+      specifier: ^1.7.7
+      version: 1.7.7
     prettier:
       specifier: ^3.5.3
       version: 3.7.3
@@ -204,7 +207,7 @@ importers:
         specifier: 'catalog:'
         version: 0.545.0(react@19.2.0)
       lunar-javascript:
-        specifier: ^1.7.7
+        specifier: 'catalog:'
         version: 1.7.7
       react:
         specifier: 'catalog:'

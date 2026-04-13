@@ -1,38 +1,12 @@
-# Never copy node_modules from host (very important)
 node_modules
 packages/*/node_modules
-
-# Git
-.git
-.gitignore
-
-# IDE / config
-.vscode
-.DS_Store
-
-# Logs
-*.log
-npm-debug.log*
-pnpm-debug.log*
-
-# Local cache dirs
-.tanstack
-packages/*/.tanstack
-
-# Build outputs (if any)
 dist
 packages/*/dist
-
-# Documentation
-*.md
-
-# Project configs that shouldn't be sent to Docker
-.prettierignore
-prettier.config.js
-eslint.config.js
-
-# GitHub workflows
-.github
-
-# OS files
-Thumbs.db
+.git
+.npm
+.pnpm-store
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example

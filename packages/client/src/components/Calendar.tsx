@@ -14,6 +14,7 @@ import {
 } from 'date-fns'
 import { enUS, zhCN } from 'date-fns/locale'
 import { Check, ChevronLeft, ChevronRight, Plus, Trash2 } from 'lucide-react'
+import { Solar } from 'lunar-javascript'
 import React, { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { cn } from '../lib/utils'
@@ -163,6 +164,25 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
                   >
                     {format(day, 'd')}
                   </span>
+                  {isChinese && (
+                    <span
+                      className={cn(
+                        'text-[10px] md:text-xs mt-0.5 leading-none font-medium transition-all group-hover:opacity-100',
+                        isSelected ? 'text-white/80' : 'text-white/40 group-hover:text-white/60',
+                      )}
+                    >
+                      {(() => {
+                        const lunar = Solar.fromDate(day).getLunar()
+                        const festivals = lunar.getFestivals()
+                        const solarTerms = lunar.getJieQi()
+                        if (festivals.length > 0)
+                          return festivals[0]
+                        if (solarTerms)
+                          return solarTerms
+                        return lunar.getDayInChinese() === '初一' ? `${lunar.getMonthInChinese()}月` : lunar.getDayInChinese()
+                      })()}
+                    </span>
+                  )}
 
                   {/* Todo Indicators */}
                   <div className="flex gap-0.5 md:gap-1 mt-1 md:mt-2">
@@ -196,11 +216,21 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
         )}
         >
           <div className="h-full flex flex-col">
-            <h3 className="text-2xl font-bold text-white mb-6">
-              {selectedDate
-                ? format(selectedDate, isChinese ? 'M月d日 EEEE' : 'EEEE, MMMM do', { locale: dateLocale })
-                : t('home.selectDate')}
-            </h3>
+            <div className="mb-6">
+              <h3 className="text-2xl font-bold text-white">
+                {selectedDate
+                  ? format(selectedDate, isChinese ? 'M月d日 EEEE' : 'EEEE, MMMM do', { locale: dateLocale })
+                  : t('home.selectDate')}
+              </h3>
+              {selectedDate && isChinese && (
+                <div className="text-white/40 text-sm mt-1 font-medium">
+                  {(() => {
+                    const lunar = Solar.fromDate(selectedDate).getLunar()
+                    return `农历 ${lunar.getMonthInChinese()}月${lunar.getDayInChinese()} · ${lunar.getYearInGanZhi()}${lunar.getYearShengXiao()}年`
+                  })()}
+                </div>
+              )}
+            </div>
 
             {selectedDate
               ? (

@@ -76,7 +76,14 @@ writeFileSync(path.join(SERVER_RESOURCE_DIR, 'package.json'), JSON.stringify(ser
 // 在资源目录安装生产依赖 (通过空的 workspace 文件绕过根目录解析)
 console.log('Installing server dependencies in isolation...')
 writeFileSync(path.join(SERVER_RESOURCE_DIR, 'pnpm-workspace.yaml'), 'packages: []\n')
-writeFileSync(path.join(SERVER_RESOURCE_DIR, '.npmrc'), 'recursive=false\n')
+writeFileSync(
+  path.join(SERVER_RESOURCE_DIR, '.npmrc'),
+  [
+    'recursive=false',
+    'only-built-dependencies[]=bcrypt',
+    'only-built-dependencies[]=better-sqlite3',
+  ].join('\n') + '\n',
+)
 
 run('pnpm install --prod --no-frozen-lockfile', SERVER_RESOURCE_DIR)
 

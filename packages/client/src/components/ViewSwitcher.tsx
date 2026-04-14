@@ -22,14 +22,14 @@ export function ViewSwitcher<T extends string>({ options, value, onChange }: Vie
           key={option.value}
           onClick={() => onChange(option.value)}
           className={cn(
-            'flex-1 xl:flex-none relative px-6 py-2 rounded-xl transition-all duration-300 tracking-wide text-sm font-bold flex items-center justify-center gap-2 overflow-hidden group',
+            'flex-1 xl:flex-none relative px-7 py-2.5 rounded-xl transition-all duration-300 tracking-wide text-sm font-bold flex items-center justify-center gap-2 overflow-hidden group',
             value === option.value
-              ? 'text-white shadow-[0_0_20px_rgba(99,102,241,0.4)]'
+              ? 'text-white'
               : 'text-white/60 hover:text-white',
           )}
         >
           {value === option.value ? (
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl" />
+            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl shadow-[0_4px_15px_rgba(99,102,241,0.3)]" />
           ) : (
             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 rounded-xl" />
           )}

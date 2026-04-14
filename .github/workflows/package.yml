@@ -45,6 +45,17 @@ jobs:
       - name: prepare resources
         run: pnpm tauri:prepare
 
+      - name: Rename Product Name for clarity
+        shell: bash
+        run: |
+          if [ "${{ matrix.platform }}" == "windows-latest" ]; then
+            # Windows sed 语法略有不同，但 actions 环境通常是 bash/git bash
+            sed -i 's/"productName": "GTD"/"productName": "GTD-Windows"/g' src-tauri/tauri.conf.json
+          else
+            # macOS
+            sed -i '' 's/"productName": "GTD"/"productName": "GTD-MacOS"/g' src-tauri/tauri.conf.json
+          fi
+
       - name: build and package
         uses: tauri-apps/tauri-action@v0
         env:

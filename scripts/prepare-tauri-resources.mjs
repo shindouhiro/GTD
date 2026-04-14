@@ -39,9 +39,12 @@ const serverPkg = JSON.parse(readFileSync(serverPkgPath, 'utf8'))
 const workspaceYaml = readFileSync(path.join(repoRoot, 'pnpm-workspace.yaml'), 'utf8')
 
 // 一个简单的正则解析器，用于从 pnpm-workspace.yaml 提取 catalog
+const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
+
 const resolveVersion = (name) => {
   // 兼容有无引号的情况: "name": version 或 name: version
-  const regex = new RegExp(`^\\s+["']?${name}["']?:\\s+["']?(.+?)["']?\\s*$`, 'm')
+  const escapedName = escapeRegex(name)
+  const regex = new RegExp(`^\\s+["']?${escapedName}["']?:\\s+["']?(.+?)["']?\\s*$`, 'm')
   const match = workspaceYaml.match(regex)
   return match ? match[1] : null
 }
@@ -57,10 +60,18 @@ const resolveDeps = (deps) => {
 }
 
 resolveDeps(serverPkg.dependencies)
-resolveDeps(serverPkg.devDependencies)
+
+// 仅保留生产运行所需字段，避免 CI 解析 devDependencies 中的 catalog: 引用
+const serverProdPkg = {
+  name: serverPkg.name,
+  version: serverPkg.version,
+  private: serverPkg.private,
+  type: serverPkg.type,
+  dependencies: serverPkg.dependencies || {},
+}
 
 cpSync(path.join(repoRoot, 'packages', 'server', 'dist'), path.join(SERVER_RESOURCE_DIR, 'dist'), { recursive: true })
-writeFileSync(path.join(SERVER_RESOURCE_DIR, 'package.json'), JSON.stringify(serverPkg, null, 2))
+writeFileSync(path.join(SERVER_RESOURCE_DIR, 'package.json'), JSON.stringify(serverProdPkg, null, 2))
 
 // 在资源目录安装生产依赖 (通过空的 workspace 文件绕过根目录解析)
 console.log('Installing server dependencies in isolation...')

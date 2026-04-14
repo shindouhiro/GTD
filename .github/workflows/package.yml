@@ -40,6 +40,9 @@ jobs:
       - name: install app dependencies
         run: pnpm install
 
+      - name: prepare resources
+        run: pnpm tauri:prepare
+
       - name: build and package
         uses: tauri-apps/tauri-action@v0
         env:
@@ -50,5 +53,4 @@ jobs:
           releaseBody: "See the assets to download this version and install."
           releaseDraft: true
           prerelease: false
-          buildCommand: pnpm tauri:build
           args: ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || '' }}

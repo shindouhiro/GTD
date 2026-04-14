@@ -32,17 +32,37 @@ mkdirSync(RUNTIME_RESOURCE_DIR, { recursive: true })
 console.log('Building server...')
 run('pnpm --filter @todo-app/server build')
 
-// 复制 package.json 并移除 workspace: 依赖（如果有的话，这里 server 没有 workspace 依赖）
-// 直接复制编译后的文件
-console.log('Preparing server resources...')
-cpSync(path.join(repoRoot, 'packages', 'server', 'dist'), path.join(SERVER_RESOURCE_DIR, 'dist'), { recursive: true })
-copyFileSync(path.join(repoRoot, 'packages', 'server', 'package.json'), path.join(SERVER_RESOURCE_DIR, 'package.json'))
+// 准备导出的 package.json (将 catalog: 转换为真实版本)
+console.log('Preparing server resources (resolving catalogs)...')
+const serverPkgPath = path.join(repoRoot, 'packages', 'server', 'package.json')
+const serverPkg = JSON.parse(readFileSync(serverPkgPath, 'utf8'))
+const workspaceYaml = readFileSync(path.join(repoRoot, 'pnpm-workspace.yaml'), 'utf8')
 
-// 在资源目录安装生产依赖，使用 --no-workspace 避免目录解析问题
-// 并在临时目录创建一个空的 pnpm-workspace.yaml 强制其脱离当前工作区上下文
-writeFileSync(path.join(SERVER_RESOURCE_DIR, 'pnpm-workspace.yaml'), 'packages: []\n')
+// 一个简单的正则解析器，用于从 pnpm-workspace.yaml 提取 catalog
+const resolveVersion = (name) => {
+  const regex = new RegExp(`^\\s+${name}:\\s+["']?(.+?)["']?\\s*$`, 'm')
+  const match = workspaceYaml.match(regex)
+  return match ? match[1] : null
+}
+
+const resolveDeps = (deps) => {
+  if (!deps) return
+  for (const [name, version] of Object.entries(deps)) {
+    if (version.startsWith('catalog:')) {
+      const resolved = resolveVersion(name)
+      if (resolved) deps[name] = resolved
+    }
+  }
+}
+
+resolveDeps(serverPkg.dependencies)
+resolveDeps(serverPkg.devDependencies)
+
+cpSync(path.join(repoRoot, 'packages', 'server', 'dist'), path.join(SERVER_RESOURCE_DIR, 'dist'), { recursive: true })
+writeFileSync(path.join(SERVER_RESOURCE_DIR, 'package.json'), JSON.stringify(serverPkg, null, 2))
+
+// 在资源目录安装生产依赖
 run('pnpm install --prod --no-frozen-lockfile', SERVER_RESOURCE_DIR)
-rmSync(path.join(SERVER_RESOURCE_DIR, 'pnpm-workspace.yaml'))
 
 // 2. 构建并准备 Client 资源
 console.log('Building client...')

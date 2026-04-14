@@ -1,0 +1,18 @@
+[package]
+name = "gtd-desktop"
+version = "0.1.0"
+description = "GTD Desktop App"
+authors = ["hikaru"]
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "=1.5.5", features = [] }
+
+[dependencies]
+tauri = { version = "=1.8.3", features = [] }
+tempfile = "=3.14.0"
+uuid = "=1.11.0"
+
+[features]
+default = ["custom-protocol"]
+custom-protocol = ["tauri/custom-protocol"]

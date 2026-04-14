@@ -1,0 +1,47 @@
+{
+  "$schema": "https://schema.tauri.app/config/1",
+  "build": {
+    "beforeDevCommand": "pnpm --dir ../.. dev",
+    "devPath": "http://localhost:3000",
+    "distDir": "../packages/client/dist"
+  },
+  "package": {
+    "productName": "GTD",
+    "version": "0.0.2"
+  },
+  "tauri": {
+    "allowlist": {
+      "all": false
+    },
+    "security": {
+      "csp": null
+    },
+    "windows": [
+      {
+        "title": "GTD",
+        "width": 1320,
+        "height": 860,
+        "minWidth": 960,
+        "minHeight": 640,
+        "resizable": true
+      }
+    ],
+    "bundle": {
+      "active": true,
+      "identifier": "com.hikaru.gtd",
+      "targets": [
+        "app",
+        "msi",
+        "nsis"
+      ],
+      "resources": [
+        "resources/server/**/*",
+        "resources/client/**/*",
+        "resources/runtime/**/*"
+      ],
+      "icon": [
+        "../packages/client/public/logo512.png"
+      ]
+    }
+  }
+}

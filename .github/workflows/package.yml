@@ -1,0 +1,54 @@
+name: "Package Apps"
+
+on:
+  push:
+    branches:
+      - main
+      - codex/tauri-macos-windows-backend
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+jobs:
+  package:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [macos-latest, windows-latest]
+
+    runs-on: ${{ matrix.platform }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: setup node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: setup pnpm
+        uses: pnpm/action-setup@v3
+        with:
+          version: 8
+
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
+
+      - name: install app dependencies
+        run: pnpm install
+
+      - name: build and package
+        uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tagName: v__VERSION__ # the action will replace __VERSION__ with the app version
+          releaseName: "Release v__VERSION__"
+          releaseBody: "See the assets to download this version and install."
+          releaseDraft: true
+          prerelease: false
+          buildCommand: pnpm tauri:build
+          args: ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || '' }}

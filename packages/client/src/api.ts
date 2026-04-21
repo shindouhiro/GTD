@@ -25,6 +25,13 @@ function getHeaders(): HeadersInit {
 }
 
 async function handleApiError(res: Response, defaultMessage: string): Promise<never> {
+  if (res.status === 401) {
+    tokenManager.removeToken()
+    // Use window.location for a hard redirect if not using router navigation here
+    window.location.href = '/login'
+    throw new Error('Session expired. Please login again.')
+  }
+  
   try {
     const error = await res.json()
     throw new Error(error.error || defaultMessage)

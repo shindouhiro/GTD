@@ -22,7 +22,7 @@ export const Route = createFileRoute('/')({
 })
 
 function App() {
-  const { todos, categories, fetchData, addTodo, toggleTodo, deleteTodo, deleteMultiple } = useTodos()
+  const { todos, categories, fetchData, addTodo, bulkAdd, bulkDelete, toggleTodo, deleteTodo, deleteMultiple } = useTodos()
   const [viewMode, setViewMode] = useState<ViewMode>('calendar')
   const [dateFilter, setDateFilter] = useState<DateFilterType>('today')
   const viewOptions = useViewOptions()
@@ -89,6 +89,8 @@ function App() {
                 todos={todos}
                 categories={categories}
                 onAddTodo={addTodo}
+                onBulkAddTodo={bulkAdd}
+                onBulkDeleteTodo={bulkDelete}
                 onToggleTodo={toggleTodo}
                 onDeleteTodo={deleteTodo}
               />

@@ -31,7 +31,7 @@ export function CalendarDayCell({
         isSelected
           ? 'bg-gradient-to-br from-indigo-500 to-purple-600 shadow-lg scale-105 z-10'
           : 'hover:bg-white/5 bg-white/5 border border-white/5',
-        isToday(day) && !isSelected && 'border-indigo-400 border-2',
+        isToday(day) && !isSelected && 'border-indigo-400/50 border-2 shadow-[0_0_15px_rgba(129,140,248,0.2)]',
       )}
     >
       {/* Holiday Badge */}
@@ -53,10 +53,16 @@ export function CalendarDayCell({
         )
       })()}
 
+      {isToday(day) && !isSelected && (
+        <div className="absolute -top-1 -left-1 bg-indigo-500 text-white text-[10px] px-1.5 py-0.5 rounded-full font-bold shadow-sm z-20">
+          {isChinese ? '今' : 'Today'}
+        </div>
+      )}
+
       <span
         className={cn(
           'text-sm md:text-lg font-semibold',
-          isSelected ? 'text-white' : 'text-white/90',
+          isSelected ? 'text-white' : isToday(day) ? 'text-indigo-400' : 'text-white/90',
         )}
       >
         {format(day, 'd')}

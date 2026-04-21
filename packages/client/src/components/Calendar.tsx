@@ -1,4 +1,4 @@
-import { addMonths, addWeeks, addYears, format, isSameDay, startOfDay } from 'date-fns'
+import { addDays, addMonths, addWeeks, addYears, eachDayOfInterval, format, isSameDay, startOfDay } from 'date-fns'
 import { enUS, zhCN } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
 import React, { useEffect, useMemo, useState } from 'react'
@@ -40,11 +40,21 @@ interface CalendarProps {
   todos: Array<Todo>
   categories: Array<Category>
   onAddTodo: (date: Date, text: string, categoryId?: string) => void
+  onBulkAddTodo: (dates: Date[], text: string, categoryId?: string) => void
+  onBulkDeleteTodo: (text: string, startDate: Date, endDate: Date) => void
   onToggleTodo: (id: string) => void
   onDeleteTodo: (id: string) => void
 }
 
-export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteTodo }: CalendarProps) {
+export function Calendar({ 
+  todos, 
+  categories, 
+  onAddTodo, 
+  onBulkAddTodo, 
+  onBulkDeleteTodo,
+  onToggleTodo, 
+  onDeleteTodo 
+}: CalendarProps) {
   const { t, i18n } = useTranslation()
   const {
     currentMonth,
@@ -97,20 +107,51 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
     setSelectedCategoryForNewTodo(undefined)
   }
 
+  const handleDeleteTodo = (id: string) => {
+    const todo = todos.find(t => t.id === id)
+    if (!todo) return
+
+    if (planningHorizon === 'selectedDate') {
+      onDeleteTodo(id)
+    } else {
+      const start = startOfDay(new Date())
+      const end = planningTargetDate
+      const horizonText = planningHorizon === 'week' ? t('calendar.planningHorizon.week') : 
+                         planningHorizon === 'month' ? t('calendar.planningHorizon.month') : 
+                         t('calendar.planningHorizon.year')
+      
+      // Using a more detailed message in Chinese for better UX
+      const confirmMessage = isChinese 
+        ? `确认要删除 ${horizonText} 内所有名为 "${todo.text}" 的任务吗？`
+        : t('calendar.confirmBulkDelete', { text: todo.text, horizon: horizonText })
+
+      if (window.confirm(confirmMessage)) {
+        onBulkDeleteTodo(todo.text, start, end)
+      }
+    }
+  }
+
   const handleAddTodoSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (!newTodoText.trim()) {
       return
     }
 
-    const todoDate = planningHorizon === 'selectedDate' ? selectedDate : planningTargetDate
-    if (!todoDate) {
-      return
+    if (planningHorizon === 'selectedDate') {
+      if (!selectedDate) return
+      onAddTodo(selectedDate, newTodoText, selectedCategoryForNewTodo)
+    } else {
+      const start = startOfDay(new Date())
+      const end = planningTargetDate
+      
+      // Generate all days in the interval [start, end]
+      const dates = eachDayOfInterval({ start, end })
+      
+      onBulkAddTodo(dates, newTodoText, selectedCategoryForNewTodo)
+      // Navigate to the end of the period to show progress
+      setCurrentMonth(end)
     }
 
-    onAddTodo(todoDate, newTodoText, selectedCategoryForNewTodo)
-    setCurrentMonth(todoDate)
-    selectDate(todoDate)
     setNewTodoText('')
     setSelectedCategoryForNewTodo(undefined)
     setIsModalOpen(false)
@@ -204,7 +245,7 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
           planningTargetDate={planningTargetDate}
           onAddTodo={handleAddTodoSubmit}
           onToggleTodo={onToggleTodo}
-          onDeleteTodo={onDeleteTodo}
+          onDeleteTodo={handleDeleteTodo}
           isChinese={isChinese}
           dateLocale={dateLocale}
         />

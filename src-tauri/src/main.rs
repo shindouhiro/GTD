@@ -2,29 +2,31 @@
 
 use std::fs;
 use std::io::{Read, Write};
-use std::net::{SocketAddr, TcpStream};
+use std::net::{SocketAddr, TcpListener, TcpStream};
 use std::process::{Child, Command};
 use std::sync::Mutex;
 use std::time::{Duration, Instant};
 use tauri::Manager;
 
-const BACKEND_ADDR: &str = "127.0.0.1:3001";
+struct BackendState {
+  child: Mutex<Option<Child>>,
+  port: Mutex<u16>,
+}
 
-struct BackendState(Mutex<Option<Child>>);
-
-fn is_backend_healthy() -> bool {
-  let addr: SocketAddr = match BACKEND_ADDR.parse() {
+fn is_backend_healthy(port: u16) -> bool {
+  let addr_str = format!("127.0.0.1:{}", port);
+  let addr: SocketAddr = match addr_str.parse() {
     Ok(addr) => addr,
     Err(_) => return false,
   };
 
-  let mut stream = match TcpStream::connect_timeout(&addr, Duration::from_millis(300)) {
+  let mut stream = match TcpStream::connect_timeout(&addr, Duration::from_millis(500)) {
     Ok(stream) => stream,
     Err(_) => return false,
   };
 
-  let _ = stream.set_read_timeout(Some(Duration::from_millis(300)));
-  let _ = stream.set_write_timeout(Some(Duration::from_millis(300)));
+  let _ = stream.set_read_timeout(Some(Duration::from_millis(500)));
+  let _ = stream.set_write_timeout(Some(Duration::from_millis(500)));
 
   if stream
     .write_all(b"GET /health HTTP/1.1\r\nHost: 127.0.0.1\r\nConnection: close\r\n\r\n")
@@ -41,18 +43,27 @@ fn is_backend_healthy() -> bool {
   response.contains("200")
 }
 
-fn wait_backend_ready(timeout: Duration) -> bool {
+fn wait_backend_ready(port: u16, timeout: Duration) -> bool {
   let start = Instant::now();
   while start.elapsed() <= timeout {
-    if is_backend_healthy() {
+    if is_backend_healthy(port) {
       return true;
     }
-    std::thread::sleep(Duration::from_millis(200));
+    std::thread::sleep(Duration::from_millis(300));
   }
   false
 }
 
-fn spawn_backend(app: &tauri::AppHandle) -> Result<Child, String> {
+fn find_available_port(start_port: u16) -> Option<u16> {
+  for port in start_port..65535 {
+    if TcpListener::bind(format!("127.0.0.1:{}", port)).is_ok() {
+      return Some(port);
+    }
+  }
+  None
+}
+
+fn spawn_backend(app: &tauri::AppHandle, port: u16) -> Result<Child, String> {
   let resource_dir = app
     .path_resolver()
     .resource_dir()
@@ -89,7 +100,7 @@ fn spawn_backend(app: &tauri::AppHandle) -> Result<Child, String> {
     .arg(server_entry)
     .current_dir(server_dir)
     .env("NODE_ENV", "production")
-    .env("PORT", "3001")
+    .env("PORT", port.to_string())
     .env("DB_PATH", db_path)
     .spawn()
     .map_err(|e| format!("启动内置后端失败: {e}"))
@@ -98,7 +109,7 @@ fn spawn_backend(app: &tauri::AppHandle) -> Result<Child, String> {
 fn stop_backend(app: &tauri::AppHandle) {
   let state = app.state::<BackendState>();
   let child = {
-    let mut guard = state.0.lock().expect("backend mutex poisoned");
+    let mut guard = state.child.lock().expect("backend mutex poisoned");
     guard.take()
   };
 
@@ -110,17 +121,49 @@ fn stop_backend(app: &tauri::AppHandle) {
 
 fn main() {
   tauri::Builder::default()
-    .manage(BackendState(Mutex::new(None)))
+    .manage(BackendState {
+      child: Mutex::new(None),
+      port: Mutex::new(3001),
+    })
     .setup(|app| {
-      if !is_backend_healthy() {
-        let child = spawn_backend(&app.handle())?;
+      let port = find_available_port(3001).ok_or("找不到可用的网络端口")?;
+      
+      // 更新状态中的端口
+      {
         let state = app.state::<BackendState>();
-        *state.0.lock().expect("backend mutex poisoned") = Some(child);
+        *state.port.lock().unwrap() = port;
+      }
 
-        if !wait_backend_ready(Duration::from_secs(8)) {
-          return Err("内置后端启动超时".into());
+      match spawn_backend(&app.handle(), port) {
+        Ok(child) => {
+          let state = app.state::<BackendState>();
+          *state.child.lock().expect("backend mutex poisoned") = Some(child);
+        }
+        Err(e) => {
+          eprintln!("Backend spawn failed: {}", e);
+          let _ = tauri::api::dialog::message(
+            None,
+            "启动失败",
+            format!("后端服务启动失败: {}\n请检查磁盘空间或权限。", e)
+          );
+          return Err(e.into());
         }
       }
+
+      // 等待就绪
+      if !wait_backend_ready(port, Duration::from_secs(15)) {
+        let _ = tauri::api::dialog::message(
+          None,
+          "启动超时",
+          "内置后端服务启动超时，请尝试重新启动应用。"
+        );
+        return Err("内置后端启动超时".into());
+      }
+
+      // 注入动态端口到前端
+      let api_url = format!("http://127.0.0.1:{}/api", port);
+      let window = app.get_window("main").unwrap();
+      let _ = window.eval(&format!("window.__TAURI_API_URL__ = '{}';", api_url));
 
       Ok(())
     })

@@ -1,9 +1,7 @@
 import { execSync } from 'node:child_process'
-import { chmodSync, copyFileSync, cpSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { chmodSync, copyFileSync, cpSync, existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-
-const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 const repoRoot = path.resolve(__dirname, '..')
 
@@ -28,25 +26,26 @@ mkdirSync(SERVER_RESOURCE_DIR, { recursive: true })
 mkdirSync(CLIENT_RESOURCE_DIR, { recursive: true })
 mkdirSync(RUNTIME_RESOURCE_DIR, { recursive: true })
 
-// 1. 构建并准备 Server 资源 (替代不稳定的 pnpm deploy)
+// 1. 构建并准备 Server 资源
 console.log('Building server...')
 run('pnpm --filter @todo-app/server build')
 
-// 准备导出的 package.json (将 catalog: 转换为真实版本)
+// 准备导出的 package.json
 console.log('Preparing server resources (resolving catalogs)...')
 const serverPkgPath = path.join(repoRoot, 'packages', 'server', 'package.json')
 const serverPkg = JSON.parse(readFileSync(serverPkgPath, 'utf8'))
 const workspaceYaml = readFileSync(path.join(repoRoot, 'pnpm-workspace.yaml'), 'utf8')
 
-// 一个简单的正则解析器，用于从 pnpm-workspace.yaml 提取 catalog
-const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
-
+// 解析 catalog 版本
 const resolveVersion = (name) => {
-  // 兼容有无引号的情况: "name": version 或 name: version
-  const escapedName = escapeRegex(name)
+  const escapedName = name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')
   const regex = new RegExp(`^\\s+["']?${escapedName}["']?:\\s+["']?(.+?)["']?\\s*$`, 'm')
   const match = workspaceYaml.match(regex)
-  return match ? match[1] : null
+  if (match) return match[1]
+  
+  // 尝试全局备选方案
+  console.warn(`Warning: Could not find ${name} in catalogs, checking dependencies...`)
+  return null
 }
 
 const resolveDeps = (deps) => {
@@ -55,13 +54,13 @@ const resolveDeps = (deps) => {
     if (version.startsWith('catalog:')) {
       const resolved = resolveVersion(name)
       if (resolved) deps[name] = resolved
+      else console.error(`Error: Failed to resolve catalog version for ${name}`)
     }
   }
 }
 
 resolveDeps(serverPkg.dependencies)
 
-// 仅保留生产运行所需字段，避免 CI 解析 devDependencies 中的 catalog: 引用
 const serverProdPkg = {
   name: serverPkg.name,
   version: serverPkg.version,
@@ -70,17 +69,20 @@ const serverProdPkg = {
   dependencies: serverPkg.dependencies || {},
 }
 
-cpSync(path.join(repoRoot, 'packages', 'server', 'dist'), path.join(SERVER_RESOURCE_DIR, 'dist'), { recursive: true })
-writeFileSync(path.join(SERVER_RESOURCE_DIR, 'package.json'), JSON.stringify(serverProdPkg, null, 2))
+const serverPkgTarget = path.join(SERVER_RESOURCE_DIR, 'package.json')
+writeFileSync(serverPkgTarget, JSON.stringify(serverProdPkg, null, 2))
+console.log(`Created: ${serverPkgTarget}`)
 
-// 在资源目录安装生产依赖 (通过空的 workspace 文件绕过根目录解析)
+cpSync(path.join(repoRoot, 'packages', 'server', 'dist'), path.join(SERVER_RESOURCE_DIR, 'dist'), { recursive: true })
+
+// 安装生产依赖
 console.log('Installing server dependencies in isolation...')
 writeFileSync(path.join(SERVER_RESOURCE_DIR, 'pnpm-workspace.yaml'), 'packages: []\n')
 writeFileSync(
   path.join(SERVER_RESOURCE_DIR, '.npmrc'),
   [
     'recursive=false',
-    'node-linker=hoisted', // 强制打平 node_modules，解决 Windows 路径过长问题
+    'node-linker=hoisted',
     'only-built-dependencies[]=bcrypt',
     'only-built-dependencies[]=better-sqlite3',
   ].join('\n') + '\n',
@@ -88,7 +90,6 @@ writeFileSync(
 
 run('pnpm install --prod --no-frozen-lockfile', SERVER_RESOURCE_DIR)
 
-// 清理隔离文件
 rmSync(path.join(SERVER_RESOURCE_DIR, 'pnpm-workspace.yaml'))
 rmSync(path.join(SERVER_RESOURCE_DIR, '.npmrc'))
 
@@ -108,9 +109,22 @@ cpSync(path.join(repoRoot, 'packages', 'client', 'dist'), path.join(CLIENT_RESOU
 console.log('Preparing runtime...')
 const nodeBinaryName = process.platform === 'win32' ? 'node.exe' : 'node'
 const nodeTargetPath = path.join(RUNTIME_RESOURCE_DIR, nodeBinaryName)
+
+console.log(`Copying node from ${process.execPath} to ${nodeTargetPath}`)
 copyFileSync(process.execPath, nodeTargetPath)
 
-if (process.platform !== 'win32')
+if (process.platform !== 'win32') {
   chmodSync(nodeTargetPath, 0o755)
+}
+
+// 最终校验
+if (!existsSync(nodeTargetPath)) {
+  console.error('Fatal: Node binary missing after copy!')
+  process.exit(1)
+}
+if (!existsSync(serverPkgTarget)) {
+  console.error('Fatal: Server package.json missing!')
+  process.exit(1)
+}
 
 console.log('Tauri resources prepared successfully!')

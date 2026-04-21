@@ -15,7 +15,7 @@ export interface Todo {
   categoryId?: string
 }
 
-const API_URL = import.meta.env.VITE_API_URL || '/api'
+const API_URL = (window as any).__TAURI_API_URL__ || import.meta.env.VITE_API_URL || '/api'
 
 function getHeaders(): HeadersInit {
   return {

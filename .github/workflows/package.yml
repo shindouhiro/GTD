@@ -70,7 +70,7 @@ jobs:
           args: ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || '' }}
 
       - name: release changelog
-        if: matrix.platform == 'macos-latest'
+        if: matrix.platform == 'macos-latest' && startsWith(github.ref, 'refs/tags/v')
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: npx changelogithub --no-group

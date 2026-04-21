@@ -74,7 +74,17 @@
       "sat": "Sat"
     },
     "today": "Today",
-    "addTaskForDate": "Add Task - {{date}}"
+    "addTaskForDate": "Add Task - {{date}}",
+    "planningHorizon": {
+      "label": "Planning Range",
+      "selectedDate": "Selected Date",
+      "week": "Next Week",
+      "month": "Next Month",
+      "year": "Next Year",
+      "targetDate": "Tasks will be scheduled for: {{date}}",
+      "autoPlanTitle": "Future Planning",
+      "autoPlanHint": "No specific date is selected. Added tasks will jump to the planned date automatically."
+    }
   },
   "categories": {
     "title": "Category Management",

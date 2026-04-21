@@ -74,7 +74,17 @@
       "sat": "六"
     },
     "today": "今天",
-    "addTaskForDate": "添加任务 - {{date}}"
+    "addTaskForDate": "添加任务 - {{date}}",
+    "planningHorizon": {
+      "label": "计划周期",
+      "selectedDate": "选中日期",
+      "week": "未来一周",
+      "month": "未来一月",
+      "year": "未来一年",
+      "targetDate": "任务将自动安排到：{{date}}",
+      "autoPlanTitle": "未来计划",
+      "autoPlanHint": "当前未选择具体日期，添加后会自动定位到计划日期。"
+    }
   },
   "categories": {
     "title": "分类管理",

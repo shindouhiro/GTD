@@ -5,6 +5,7 @@ import { Solar } from 'lunar-javascript'
 import { useTranslation } from 'react-i18next'
 import { cn } from '@/lib/utils'
 import { CategoryBadge, CategoryPicker } from '@/components/CategoryComponents'
+import { type PlanningHorizon, PlanningHorizonSelector } from '@/components/CalendarView/PlanningHorizonSelector'
 import type { Category, Todo } from '@/db'
 
 interface DaySidePanelProps {
@@ -15,6 +16,9 @@ interface DaySidePanelProps {
   setNewTodoText: (text: string) => void
   selectedCategoryForNewTodo: string | undefined
   setSelectedCategoryForNewTodo: (id: string | undefined) => void
+  planningHorizon: PlanningHorizon
+  setPlanningHorizon: (horizon: PlanningHorizon) => void
+  planningTargetDate: Date
   onAddTodo: (e: React.FormEvent) => void
   onToggleTodo: (id: string) => void
   onDeleteTodo: (id: string) => void
@@ -30,6 +34,9 @@ export function DaySidePanel({
   setNewTodoText,
   selectedCategoryForNewTodo,
   setSelectedCategoryForNewTodo,
+  planningHorizon,
+  setPlanningHorizon,
+  planningTargetDate,
   onAddTodo,
   onToggleTodo,
   onDeleteTodo,
@@ -37,11 +44,12 @@ export function DaySidePanel({
   dateLocale,
 }: DaySidePanelProps) {
   const { t } = useTranslation()
+  const canAddTodo = selectedDate !== null || planningHorizon !== 'selectedDate'
 
   return (
     <div className={cn(
       'w-full lg:w-96 bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-6 shadow-xl transition-all duration-500',
-      selectedDate ? 'opacity-100 translate-x-0' : 'opacity-50 translate-x-0 pointer-events-none lg:pointer-events-auto lg:opacity-100 lg:translate-x-0',
+      canAddTodo ? 'opacity-100 translate-x-0' : 'opacity-50 translate-x-0 pointer-events-none lg:pointer-events-auto lg:opacity-100 lg:translate-x-0',
     )}
     >
       <div className="h-full flex flex-col">
@@ -49,7 +57,9 @@ export function DaySidePanel({
           <h3 className="text-2xl font-bold text-white">
             {selectedDate
               ? format(selectedDate, isChinese ? 'M月d日 EEEE' : 'EEEE, MMMM do', { locale: dateLocale })
-              : t('home.selectDate')}
+              : canAddTodo
+                ? t('calendar.planningHorizon.autoPlanTitle')
+                : t('home.selectDate')}
           </h3>
           {selectedDate && isChinese && (
             <div className="text-white/40 text-sm mt-1 font-medium">
@@ -61,9 +71,18 @@ export function DaySidePanel({
           )}
         </div>
 
-        {selectedDate ? (
+        {canAddTodo ? (
           <>
             <form onSubmit={onAddTodo} className="mb-6 space-y-4 hidden lg:block">
+              <PlanningHorizonSelector
+                horizon={planningHorizon}
+                onChange={setPlanningHorizon}
+                targetDate={planningTargetDate}
+                isChinese={isChinese}
+                dateLocale={dateLocale}
+                idPrefix="calendar-desktop"
+              />
+
               <div className="relative">
                 <input
                   type="text"
@@ -89,54 +108,64 @@ export function DaySidePanel({
             </form>
 
             <div className="flex-1 overflow-y-auto space-y-3 pr-2 custom-scrollbar max-h-[500px]">
-              {selectedDateTodos.length === 0 ? (
-                <div className="text-center text-white/40 py-8">
-                  {t('home.noTasksForDay')}
-                </div>
-              ) : (
-                selectedDateTodos.map((todo) => {
-                  const category = categories.find(c => c.id === todo.categoryId)
-                  return (
-                    <div
-                      key={todo.id}
-                      className="group flex items-center gap-3 bg-black/20 p-3 rounded-xl border border-white/5 hover:border-white/10 transition-all"
-                    >
-                      <button
-                        onClick={() => onToggleTodo(todo.id)}
-                        className={cn(
-                          'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0',
-                          todo.completed
-                            ? 'bg-green-500 border-green-500'
-                            : 'border-white/30 hover:border-indigo-400',
-                        )}
-                      >
-                        {todo.completed && <Check className="w-3.5 h-3.5 text-white" />}
-                      </button>
-                      <div className="flex-1 min-w-0">
-                        <span
-                          className={cn(
-                            'text-white/90 transition-all block',
-                            todo.completed && 'line-through text-white/40',
-                          )}
-                        >
-                          {todo.text}
-                        </span>
-                        {category && (
-                          <div className="mt-1">
-                            <CategoryBadge category={category} small />
+              {selectedDate
+                ? (
+                    selectedDateTodos.length === 0
+                      ? (
+                          <div className="text-center text-white/40 py-8">
+                            {t('home.noTasksForDay')}
                           </div>
-                        )}
-                      </div>
-                      <button
-                        onClick={() => onDeleteTodo(todo.id)}
-                        className="opacity-0 group-hover:opacity-100 p-2 text-white/40 hover:text-red-400 transition-all flex-shrink-0"
-                      >
-                        <Trash2 className="w-4 h-4" />
-                      </button>
-                    </div>
+                        )
+                      : (
+                          selectedDateTodos.map((todo) => {
+                            const category = categories.find(c => c.id === todo.categoryId)
+                            return (
+                              <div
+                                key={todo.id}
+                                className="group flex items-center gap-3 bg-black/20 p-3 rounded-xl border border-white/5 hover:border-white/10 transition-all"
+                              >
+                                <button
+                                  onClick={() => onToggleTodo(todo.id)}
+                                  className={cn(
+                                    'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0',
+                                    todo.completed
+                                      ? 'bg-green-500 border-green-500'
+                                      : 'border-white/30 hover:border-indigo-400',
+                                  )}
+                                >
+                                  {todo.completed && <Check className="w-3.5 h-3.5 text-white" />}
+                                </button>
+                                <div className="flex-1 min-w-0">
+                                  <span
+                                    className={cn(
+                                      'text-white/90 transition-all block',
+                                      todo.completed && 'line-through text-white/40',
+                                    )}
+                                  >
+                                    {todo.text}
+                                  </span>
+                                  {category && (
+                                    <div className="mt-1">
+                                      <CategoryBadge category={category} small />
+                                    </div>
+                                  )}
+                                </div>
+                                <button
+                                  onClick={() => onDeleteTodo(todo.id)}
+                                  className="opacity-0 group-hover:opacity-100 p-2 text-white/40 hover:text-red-400 transition-all flex-shrink-0"
+                                >
+                                  <Trash2 className="w-4 h-4" />
+                                </button>
+                              </div>
+                            )
+                          })
+                        )
                   )
-                })
-              )}
+                : (
+                    <div className="text-center text-white/40 py-8">
+                      {t('calendar.planningHorizon.autoPlanHint')}
+                    </div>
+                  )}
             </div>
           </>
         ) : (

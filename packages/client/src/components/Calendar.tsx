@@ -1,16 +1,40 @@
-import { format, isSameDay } from 'date-fns'
+import { addMonths, addWeeks, addYears, format, isSameDay, startOfDay } from 'date-fns'
 import { enUS, zhCN } from 'date-fns/locale'
 import { ChevronLeft, ChevronRight, Plus } from 'lucide-react'
-import React, { useState } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { CategoryPicker, CategorySelector } from '@/components/CategoryComponents'
 import { Modal } from '@/components/Modal'
 import { CalendarDayCell } from '@/components/CalendarView/CalendarDayCell'
 import { DaySidePanel } from '@/components/CalendarView/DaySidePanel'
+import { type PlanningHorizon, PlanningHorizonSelector } from '@/components/CalendarView/PlanningHorizonSelector'
 import { useCalendar } from '@/hooks/useCalendar'
 import type { Category, Todo } from '@/db'
 
 export type { Todo }
+
+const PLANNING_HORIZON_STORAGE_KEY = 'calendar-planning-horizon'
+
+const planningHorizonOptions: PlanningHorizon[] = ['selectedDate', 'week', 'month', 'year']
+
+function isPlanningHorizon(value: string | null): value is PlanningHorizon {
+  return value !== null && planningHorizonOptions.includes(value as PlanningHorizon)
+}
+
+function getPlanningTargetDate(horizon: PlanningHorizon, selectedDate: Date | null) {
+  const today = startOfDay(new Date())
+  switch (horizon) {
+    case 'week':
+      return addWeeks(today, 1)
+    case 'month':
+      return addMonths(today, 1)
+    case 'year':
+      return addYears(today, 1)
+    case 'selectedDate':
+    default:
+      return selectedDate ?? today
+  }
+}
 
 interface CalendarProps {
   todos: Array<Todo>
@@ -30,14 +54,32 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
     nextMonth,
     prevMonth,
     selectDate,
+    setCurrentMonth,
   } = useCalendar()
   
   const [newTodoText, setNewTodoText] = useState('')
   const [selectedCategoryFilter, setSelectedCategoryFilter] = useState<string | undefined>(undefined)
   const [selectedCategoryForNewTodo, setSelectedCategoryForNewTodo] = useState<string | undefined>(undefined)
+  const [planningHorizon, setPlanningHorizon] = useState<PlanningHorizon>(() => {
+    if (typeof window === 'undefined') {
+      return 'selectedDate'
+    }
+
+    const storedHorizon = window.localStorage.getItem(PLANNING_HORIZON_STORAGE_KEY)
+    return isPlanningHorizon(storedHorizon) ? storedHorizon : 'selectedDate'
+  })
   const [isModalOpen, setIsModalOpen] = useState(false)
   const dateLocale = (i18n.resolvedLanguage ?? 'en').startsWith('zh') ? zhCN : enUS
   const isChinese = (i18n.resolvedLanguage ?? 'en').startsWith('zh')
+
+  useEffect(() => {
+    window.localStorage.setItem(PLANNING_HORIZON_STORAGE_KEY, planningHorizon)
+  }, [planningHorizon])
+
+  const planningTargetDate = useMemo(
+    () => getPlanningTargetDate(planningHorizon, selectedDate),
+    [planningHorizon, selectedDate],
+  )
 
   const weekDays = [
     t('calendar.weekDays.sun'),
@@ -57,12 +99,21 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
 
   const handleAddTodoSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    if (selectedDate && newTodoText.trim()) {
-      onAddTodo(selectedDate, newTodoText, selectedCategoryForNewTodo)
-      setNewTodoText('')
-      setSelectedCategoryForNewTodo(undefined)
-      setIsModalOpen(false)
+    if (!newTodoText.trim()) {
+      return
     }
+
+    const todoDate = planningHorizon === 'selectedDate' ? selectedDate : planningTargetDate
+    if (!todoDate) {
+      return
+    }
+
+    onAddTodo(todoDate, newTodoText, selectedCategoryForNewTodo)
+    setCurrentMonth(todoDate)
+    selectDate(todoDate)
+    setNewTodoText('')
+    setSelectedCategoryForNewTodo(undefined)
+    setIsModalOpen(false)
   }
 
   // Filter todos by selected category
@@ -73,6 +124,8 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
   const selectedDateTodos = selectedDate
     ? filteredTodos.filter(todo => isSameDay(todo.date, selectedDate))
     : []
+  const canOpenMobileAddModal = selectedDate !== null || planningHorizon !== 'selectedDate'
+  const mobileModalTargetDate = planningHorizon === 'selectedDate' ? selectedDate : planningTargetDate
 
   return (
     <div className="space-y-6">
@@ -146,6 +199,9 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
           setNewTodoText={setNewTodoText}
           selectedCategoryForNewTodo={selectedCategoryForNewTodo}
           setSelectedCategoryForNewTodo={setSelectedCategoryForNewTodo}
+          planningHorizon={planningHorizon}
+          setPlanningHorizon={setPlanningHorizon}
+          planningTargetDate={planningTargetDate}
           onAddTodo={handleAddTodoSubmit}
           onToggleTodo={onToggleTodo}
           onDeleteTodo={onDeleteTodo}
@@ -155,7 +211,7 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
       </div>
 
       {/* Mobile Floating Action Button */}
-      {selectedDate && (
+      {canOpenMobileAddModal && (
         <button
           id="calendar-mobile-add-task-button"
           onClick={() => setIsModalOpen(true)}
@@ -170,11 +226,20 @@ export function Calendar({ todos, categories, onAddTodo, onToggleTodo, onDeleteT
       <Modal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
-        title={selectedDate
-          ? t('calendar.addTaskForDate', { date: format(selectedDate, isChinese ? 'M月d日' : 'MMM d', { locale: dateLocale }) })
+        title={mobileModalTargetDate
+          ? t('calendar.addTaskForDate', { date: format(mobileModalTargetDate, isChinese ? 'M月d日' : 'MMM d', { locale: dateLocale }) })
           : t('modal.addTask')}
       >
         <form onSubmit={handleAddTodoSubmit} className="space-y-4">
+          <PlanningHorizonSelector
+            horizon={planningHorizon}
+            onChange={setPlanningHorizon}
+            targetDate={planningTargetDate}
+            isChinese={isChinese}
+            dateLocale={dateLocale}
+            idPrefix="calendar-mobile"
+          />
+
           <div className="relative">
             <input
               type="text"

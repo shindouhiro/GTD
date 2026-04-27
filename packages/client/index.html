@@ -16,6 +16,14 @@
         try {
           var theme = localStorage.getItem('app-theme') || 'default';
           document.documentElement.setAttribute('data-theme', theme);
+          if (theme === 'custom') {
+            var custom = JSON.parse(localStorage.getItem('app-theme-custom'));
+            if (custom) {
+              document.documentElement.style.setProperty('--theme-start', custom.start);
+              document.documentElement.style.setProperty('--theme-mid', custom.mid);
+              document.documentElement.style.setProperty('--theme-end', custom.end);
+            }
+          }
         } catch (e) {}
       })();
     </script>

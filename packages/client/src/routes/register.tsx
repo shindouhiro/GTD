@@ -44,19 +44,19 @@ function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 flex items-center justify-center px-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-4 py-6 sm:py-8">
       <div className="w-full max-w-md">
-        <div className="bg-white/10 backdrop-blur-lg border border-white/20 rounded-3xl p-8 shadow-2xl">
-          <div className="flex items-center justify-center mb-8">
-            <div className="p-4 bg-gradient-to-br from-purple-500 to-pink-500 rounded-2xl">
-              <UserPlus className="w-8 h-8 text-white" />
+        <div className="rounded-3xl border border-white/20 bg-white/10 p-5 shadow-2xl backdrop-blur-lg sm:p-8">
+          <div className="mb-6 flex items-center justify-center sm:mb-8">
+            <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-3 sm:p-4">
+              <UserPlus className="h-7 w-7 text-white sm:h-8 sm:w-8" />
             </div>
           </div>
 
-          <h1 className="text-3xl font-bold text-white text-center mb-2">
+          <h1 className="mb-2 text-center text-2xl font-bold text-white sm:text-3xl">
             {t('auth.createAccount')}
           </h1>
-          <p className="text-white/60 text-center mb-8">
+          <p className="mb-6 text-center text-sm text-white/60 sm:mb-8 sm:text-base">
             {t('auth.signUpToOrganize')}
           </p>
 
@@ -66,7 +66,7 @@ function RegisterPage() {
             </div>
           )}
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-5 sm:space-y-6">
             <div>
               <label className="block text-white/80 text-sm font-medium mb-2">
                 {t('auth.name')}
@@ -127,11 +127,12 @@ function RegisterPage() {
             </button>
           </form>
 
-          <div className="mt-6 text-center">
+          <div className="mt-5 text-center sm:mt-6">
             <p className="text-white/60 text-sm">
               {t('auth.alreadyHaveAccount')}
               {' '}
               <Link
+                id="register-to-login-link"
                 to="/login"
                 className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
               >

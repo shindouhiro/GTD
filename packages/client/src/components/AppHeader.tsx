@@ -1,23 +1,45 @@
-import { Link } from '@tanstack/react-router'
+import { Link, useNavigate } from '@tanstack/react-router'
+import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { authApi } from '@/lib/auth'
 
 export function AppHeader() {
   const { t } = useTranslation()
+  const navigate = useNavigate()
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  const handleLogout = async () => {
+    if (isLoggingOut)
+      return
+
+    setIsLoggingOut(true)
+    authApi.logout()
+
+    try {
+      await navigate({ to: '/login', replace: true })
+    }
+    catch {
+      window.location.replace('/login')
+    }
+    finally {
+      setIsLoggingOut(false)
+    }
+  }
 
   return (
-    <header className="mb-12 text-center">
-      <div className="flex flex-col md:flex-row items-center justify-center gap-6 md:gap-8 mb-8">
-        <h1 className="text-4xl md:text-5xl font-bold text-white tracking-tight">
+    <header className="mb-8 text-center md:mb-12">
+      <div className="mb-6 flex flex-col items-center justify-center gap-4 md:mb-8 md:gap-6">
+        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl md:text-5xl">
           {t('home.title')}
         </h1>
-        <div className="flex items-center gap-3">
+        <div className="grid w-full grid-cols-2 gap-2.5 sm:flex sm:w-auto sm:flex-wrap sm:justify-center sm:gap-3">
           <Link
+            id="app-header-statistics-link"
             to="/statistics"
-            className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-xl text-white font-medium transition-all hover:scale-105 shadow-lg text-sm md:text-base"
+            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:from-indigo-600 hover:to-purple-600 hover:scale-105 sm:px-4 sm:text-sm md:text-base"
           >
             <svg
-              className="w-5 h-5"
+              className="h-4 w-4 sm:h-5 sm:w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -32,11 +54,12 @@ export function AppHeader() {
             {t('navigation.statistics')}
           </Link>
           <Link
+            id="app-header-categories-link"
             to="/categories"
-            className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 rounded-xl text-white font-medium transition-all hover:scale-105 shadow-lg text-sm md:text-base"
+            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:from-purple-600 hover:to-pink-600 hover:scale-105 sm:px-4 sm:text-sm md:text-base"
           >
             <svg
-              className="w-5 h-5"
+              className="h-4 w-4 sm:h-5 sm:w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -51,11 +74,12 @@ export function AppHeader() {
             {t('navigation.categories')}
           </Link>
           <Link
+            id="app-header-settings-link"
             to="/settings"
-            className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 rounded-xl text-white font-medium transition-all hover:scale-105 shadow-lg text-sm md:text-base"
+            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:from-blue-600 hover:to-indigo-600 hover:scale-105 sm:px-4 sm:text-sm md:text-base"
           >
             <svg
-              className="w-5 h-5"
+              className="h-4 w-4 sm:h-5 sm:w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -76,14 +100,14 @@ export function AppHeader() {
             {t('navigation.settings')}
           </Link>
           <button
-            onClick={() => {
-              authApi.logout()
-              window.location.href = '/login'
-            }}
-            className="group flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-red-500 to-pink-500 hover:from-red-600 hover:to-pink-600 rounded-xl text-white font-medium transition-all hover:scale-105 shadow-lg text-sm md:text-base"
+            id="app-header-logout-button"
+            type="button"
+            onClick={handleLogout}
+            disabled={isLoggingOut}
+            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:from-red-600 hover:to-pink-600 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm md:text-base"
           >
             <svg
-              className="w-5 h-5"
+              className="h-4 w-4 sm:h-5 sm:w-5"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -99,7 +123,7 @@ export function AppHeader() {
           </button>
         </div>
       </div>
-      <p className="text-white/60 text-lg">{t('home.subtitle')}</p>
+      <p className="px-2 text-sm text-white/60 sm:text-base md:text-lg">{t('home.subtitle')}</p>
     </header>
   )
 }

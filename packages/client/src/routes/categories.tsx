@@ -54,20 +54,21 @@ function CategoriesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4">
-      <div className="max-w-5xl mx-auto">
-        <header className="mb-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-4 py-6 md:py-10 lg:py-12">
+      <div className="mx-auto max-w-5xl">
+        <header className="mb-8 md:mb-12">
           <Link
+            id="categories-back-to-home-link"
             to="/"
             className="inline-flex items-center gap-2 text-white/60 hover:text-white transition-colors mb-6"
           >
             <ArrowLeft className="w-4 h-4" />
             {t('navigation.backToCalendar')}
           </Link>
-          <h1 className="text-5xl font-bold text-white tracking-tight mb-4">
+          <h1 className="mb-3 text-3xl font-bold tracking-tight text-white sm:text-4xl md:mb-4 md:text-5xl">
             {t('categories.title')}
           </h1>
-          <p className="text-white/60 text-lg">{t('categories.subtitle')}</p>
+          <p className="text-base text-white/60 md:text-lg">{t('categories.subtitle')}</p>
         </header>
 
         <CategoryManager

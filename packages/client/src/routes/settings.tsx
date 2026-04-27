@@ -69,10 +69,11 @@ function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4">
-      <div className="max-w-2xl mx-auto">
-        <div className="flex items-center gap-4 mb-12">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-4 py-6 md:py-10 lg:py-12">
+      <div className="mx-auto max-w-2xl">
+        <div className="mb-8 flex items-center gap-3 md:mb-12 md:gap-4">
           <Link
+            id="settings-back-to-home-link"
             to="/"
             className="p-2 bg-white/10 hover:bg-white/20 rounded-xl text-white transition-all border border-white/10"
           >
@@ -80,7 +81,7 @@ function SettingsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </Link>
-          <h1 className="text-4xl font-bold text-white tracking-tight">{t('settings.title')}</h1>
+          <h1 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">{t('settings.title')}</h1>
         </div>
 
         {message && (
@@ -95,7 +96,7 @@ function SettingsPage() {
 
         <div className="relative group">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-pink-500/20 rounded-3xl blur-2xl transition-all duration-700 opacity-50 group-hover:opacity-100" />
-          <div className="relative bg-white/5 backdrop-blur-2xl border border-white/10 rounded-3xl p-8 lg:p-10 shadow-2xl">
+          <div className="relative rounded-3xl border border-white/10 bg-white/5 p-5 shadow-2xl backdrop-blur-2xl sm:p-6 lg:p-10">
             <form onSubmit={handleSave} className="space-y-10">
               {/* Profile Section */}
               <div className="space-y-6">

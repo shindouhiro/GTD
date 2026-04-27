@@ -6,7 +6,7 @@ import { LanguageSwitcher } from '@/components/LanguageSwitcher'
 export const Route = createRootRoute({
   component: () => (
     <>
-      <div id="global-language-switcher" className="fixed top-4 right-4 z-50">
+      <div id="global-language-switcher" className="fixed right-3 top-3 z-50 md:right-4 md:top-4">
         <LanguageSwitcher />
       </div>
       <Outlet />

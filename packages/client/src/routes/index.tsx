@@ -51,15 +51,15 @@ function App() {
   })
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 py-12 px-4">
-      <div className="max-w-7xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 px-3 py-6 sm:px-4 md:py-8 lg:py-12">
+      <div className="mx-auto w-full max-w-7xl">
         <AppHeader />
 
         {/* Unified Control Bar */}
-        <div className="max-w-6xl mx-auto mb-8 relative group">
+        <div className="group relative mx-auto mb-6 w-full max-w-6xl md:mb-8">
           <div className="absolute inset-0 bg-gradient-to-r from-indigo-500/20 via-purple-500/20 to-indigo-500/20 rounded-3xl blur-2xl transition-all duration-700 opacity-50 group-hover:opacity-100" />
-          <div className="relative bg-white/[0.03] backdrop-blur-2xl border border-white/10 rounded-3xl p-5 lg:p-6 shadow-2xl flex flex-col gap-6">
-            <div className="flex flex-wrap items-center justify-between gap-4 lg:gap-6">
+          <div className="relative flex flex-col gap-4 rounded-3xl border border-white/10 bg-white/[0.03] p-4 shadow-2xl backdrop-blur-2xl sm:gap-5 sm:p-5 lg:gap-6 lg:p-6">
+            <div className="flex flex-wrap items-center justify-between gap-3 sm:gap-4 lg:gap-6">
               <div className="shrink-0 w-full md:w-auto">
                 <ViewSwitcher options={viewOptions} value={viewMode} onChange={setViewMode} />
               </div>
@@ -73,7 +73,7 @@ function App() {
             </div>
 
             {viewMode === 'table' && (
-              <div className="pt-5 border-t border-white/10 flex justify-center md:justify-start">
+              <div className="flex justify-center border-t border-white/10 pt-4 md:justify-start md:pt-5">
                 <DateFilter
                   dateFilter={dateFilter}
                   onDateFilterChange={setDateFilter}
@@ -96,8 +96,8 @@ function App() {
               />
             )
           : (
-              <div className="max-w-6xl mx-auto">
-                <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-3xl p-4 md:p-6 shadow-xl">
+              <div className="mx-auto max-w-6xl">
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-3 shadow-xl backdrop-blur-lg sm:p-4 md:p-6">
                   <TaskTable
                     todos={filteredTodos}
                     categories={categories}

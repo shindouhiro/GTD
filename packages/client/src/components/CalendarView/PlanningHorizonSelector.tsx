@@ -40,9 +40,9 @@ export function PlanningHorizonSelector({
             key={option.value}
             type="button"
             onClick={() => onChange(option.value)}
-            className={`rounded-lg px-3 py-2 text-xs font-medium transition-colors ${
+            className={`rounded-lg px-3 py-2 text-xs font-medium transition-all ${
               horizon === option.value
-                ? 'bg-indigo-500 text-white'
+                ? 'bg-gradient-to-br from-theme-primary to-theme-accent text-white shadow-lg'
                 : 'bg-white/5 text-white/70 hover:bg-white/10'
             }`}
           >

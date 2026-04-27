@@ -36,7 +36,7 @@ export function AppHeader() {
           <Link
             id="app-header-statistics-link"
             to="/statistics"
-            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-indigo-500 to-purple-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:from-indigo-600 hover:to-purple-600 hover:scale-105 sm:px-4 sm:text-sm md:text-base"
+            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-theme-primary to-theme-accent px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:opacity-90 hover:scale-105 sm:px-4 sm:text-sm md:text-base"
           >
             <svg
               className="h-4 w-4 sm:h-5 sm:w-5"
@@ -56,7 +56,7 @@ export function AppHeader() {
           <Link
             id="app-header-categories-link"
             to="/categories"
-            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-purple-500 to-pink-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:from-purple-600 hover:to-pink-600 hover:scale-105 sm:px-4 sm:text-sm md:text-base"
+            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-theme-accent to-theme-primary px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:opacity-90 hover:scale-105 sm:px-4 sm:text-sm md:text-base"
           >
             <svg
               className="h-4 w-4 sm:h-5 sm:w-5"
@@ -76,7 +76,7 @@ export function AppHeader() {
           <Link
             id="app-header-settings-link"
             to="/settings"
-            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:from-blue-600 hover:to-indigo-600 hover:scale-105 sm:px-4 sm:text-sm md:text-base"
+            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-white/10 px-3 py-2 text-xs font-medium text-white backdrop-blur-sm border border-white/20 transition-all hover:bg-white/20 hover:scale-105 sm:px-4 sm:text-sm md:text-base"
           >
             <svg
               className="h-4 w-4 sm:h-5 sm:w-5"
@@ -104,7 +104,7 @@ export function AppHeader() {
             type="button"
             onClick={handleLogout}
             disabled={isLoggingOut}
-            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:from-red-600 hover:to-pink-600 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm md:text-base"
+            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:opacity-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm md:text-base"
           >
             <svg
               className="h-4 w-4 sm:h-5 sm:w-5"

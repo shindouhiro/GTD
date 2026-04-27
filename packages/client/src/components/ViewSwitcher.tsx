@@ -29,7 +29,7 @@ export function ViewSwitcher<T extends string>({ options, value, onChange }: Vie
           )}
         >
           {value === option.value ? (
-            <div className="absolute inset-0 bg-gradient-to-r from-indigo-500 to-purple-500 rounded-xl shadow-[0_4px_15px_rgba(99,102,241,0.3)]" />
+            <div className="absolute inset-0 bg-gradient-to-br from-theme-primary to-theme-accent rounded-xl shadow-[0_4px_15px_rgba(0,0,0,0.3)]" />
           ) : (
             <div className="absolute inset-0 bg-white/0 group-hover:bg-white/10 transition-colors duration-300 rounded-xl" />
           )}

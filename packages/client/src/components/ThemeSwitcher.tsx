@@ -45,13 +45,13 @@ export function ThemeSwitcher({ className }: { className?: string }) {
                 onClick={() => handleThemeChange(tOption.id)}
                 className={cn(
                   'w-full flex items-center gap-3 px-3 py-2 text-left hover:bg-gray-100/50 rounded-xl transition-colors',
-                  theme === tOption.id && 'bg-indigo-50/80 text-indigo-600',
+                  theme === tOption.id && 'bg-black/5 text-theme-primary font-bold',
                 )}
               >
                 <span className={cn('w-5 h-5 rounded-lg shadow-sm shrink-0', tOption.color)} />
                 <span className="font-medium text-gray-800 flex-1">{tOption.name}</span>
                 {theme === tOption.id && (
-                  <svg className="w-4 h-4 text-indigo-600" fill="currentColor" viewBox="0 0 20 20">
+                  <svg className="w-4 h-4 text-theme-primary" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
                   </svg>
                 )}
@@ -93,10 +93,28 @@ export function ThemeSwitcher({ className }: { className?: string }) {
                     className="w-10 h-6 p-0 border-0 bg-transparent cursor-pointer"
                   />
                 </div>
+                <div className="flex items-center justify-between border-t border-gray-100 pt-2">
+                  <span className="text-xs font-medium text-gray-600">Primary</span>
+                  <input
+                    type="color"
+                    value={customColors.primary}
+                    onChange={e => setCustomColors({ ...customColors, primary: e.target.value })}
+                    className="w-10 h-6 p-0 border-0 bg-transparent cursor-pointer"
+                  />
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-medium text-gray-600">Accent</span>
+                  <input
+                    type="color"
+                    value={customColors.accent}
+                    onChange={e => setCustomColors({ ...customColors, accent: e.target.value })}
+                    className="w-10 h-6 p-0 border-0 bg-transparent cursor-pointer"
+                  />
+                </div>
               </div>
               <button
                 onClick={() => setIsOpen(false)}
-                className="w-full mt-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold rounded-lg transition-colors shadow-lg shadow-indigo-200"
+                className="w-full mt-4 py-2 bg-gradient-to-r from-theme-primary to-theme-accent hover:opacity-90 text-white text-xs font-bold rounded-lg transition-all shadow-lg"
               >
                 Apply & Close
               </button>

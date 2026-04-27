@@ -6,12 +6,16 @@ export interface CustomColors {
   start: string
   mid: string
   end: string
+  primary: string
+  accent: string
 }
 
 const DEFAULT_CUSTOM: CustomColors = {
   start: '#1e1b4b',
   mid: '#312e81',
   end: '#1e1b4b',
+  primary: '#4f46e5',
+  accent: '#6366f1',
 }
 
 export function useTheme() {
@@ -33,10 +37,14 @@ export function useTheme() {
       document.documentElement.style.setProperty('--theme-start', customColors.start)
       document.documentElement.style.setProperty('--theme-mid', customColors.mid)
       document.documentElement.style.setProperty('--theme-end', customColors.end)
+      document.documentElement.style.setProperty('--theme-primary', customColors.primary)
+      document.documentElement.style.setProperty('--theme-accent', customColors.accent)
     } else {
       document.documentElement.style.removeProperty('--theme-start')
       document.documentElement.style.removeProperty('--theme-mid')
       document.documentElement.style.removeProperty('--theme-end')
+      document.documentElement.style.removeProperty('--theme-primary')
+      document.documentElement.style.removeProperty('--theme-accent')
     }
   }, [theme, customColors])
 

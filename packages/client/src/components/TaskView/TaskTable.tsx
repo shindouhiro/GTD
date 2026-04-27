@@ -38,12 +38,12 @@ export function TaskTable({ todos, categories, onToggle, onDelete, onDeleteMulti
     <div className="w-full space-y-4">
       {/* Bulk Action Bar */}
       <div className={cn(
-        'flex items-center justify-between bg-indigo-500/10 border border-indigo-500/20 rounded-2xl px-6 py-3 transition-all duration-300',
+        'flex items-center justify-between bg-gradient-to-r from-theme-primary/10 to-theme-accent/10 border border-theme-primary/20 rounded-2xl px-6 py-3 transition-all duration-300',
         selectedIds.size > 0 ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4 pointer-events-none h-0 p-0 overflow-hidden',
       )}
       >
         <div className="flex items-center gap-3">
-          <div className="bg-indigo-500 text-white text-xs font-bold px-2 py-1 rounded-md">
+          <div className="bg-gradient-to-br from-theme-primary to-theme-accent text-white text-xs font-bold px-2 py-1 rounded-md shadow-sm">
             {selectedIds.size}
           </div>
           <span className="text-white font-medium">{t('table.selectedCount', { count: selectedIds.size })}</span>
@@ -67,7 +67,7 @@ export function TaskTable({ todos, categories, onToggle, onDelete, onDeleteMulti
                   onClick={toggleSelectAll}
                   className="text-white/40 hover:text-white transition-colors"
                 >
-                  {isAllSelected ? <CheckSquare className="w-5 h-5 text-indigo-400" /> : isSomeSelected ? <CheckSquare className="w-5 h-5 text-indigo-400/50" /> : <Square className="w-5 h-5" />}
+                  {isAllSelected ? <CheckSquare className="w-5 h-5 text-theme-primary" /> : isSomeSelected ? <CheckSquare className="w-5 h-5 text-theme-primary/50" /> : <Square className="w-5 h-5" />}
                 </button>
               </th>
               <th className="py-4 px-6 text-sm font-bold text-white/60 uppercase tracking-widest">{t('table.content')}</th>
@@ -100,7 +100,7 @@ export function TaskTable({ todos, categories, onToggle, onDelete, onDeleteMulti
                           onClick={() => toggleSelectOne(todo.id)}
                           className={cn(
                             'transition-colors',
-                            isSelected ? 'text-indigo-400' : 'text-white/20 group-hover:text-white/40',
+                            isSelected ? 'text-theme-primary' : 'text-white/20 group-hover:text-white/40',
                           )}
                         >
                           {isSelected ? <CheckSquare className="w-5 h-5" /> : <Square className="w-5 h-5" />}
@@ -172,7 +172,7 @@ export function TaskTable({ todos, categories, onToggle, onDelete, onDeleteMulti
                     }}
                     className={cn(
                       'w-8 h-8 flex-shrink-0 rounded-xl border-2 flex items-center justify-center transition-all',
-                      todo.completed ? 'bg-indigo-500 border-indigo-400' : 'border-white/20',
+                      todo.completed ? 'bg-theme-primary border-white/20' : 'border-white/20',
                     )}
                   >
                     {todo.completed && <Check className="w-5 h-5 text-white" />}

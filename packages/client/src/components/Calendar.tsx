@@ -256,7 +256,7 @@ export function Calendar({
         <button
           id="calendar-mobile-add-task-button"
           onClick={() => setIsModalOpen(true)}
-          className="fixed bottom-6 right-6 lg:hidden z-40 p-4 bg-indigo-500 hover:bg-indigo-600 text-white rounded-full shadow-2xl transition-all hover:scale-110 active:scale-95 flex items-center justify-center"
+          className="fixed bottom-6 right-6 lg:hidden z-40 p-4 bg-gradient-to-br from-theme-primary to-theme-accent hover:opacity-90 text-white rounded-full shadow-2xl transition-all hover:scale-110 active:scale-95 flex items-center justify-center"
           aria-label={t('modal.addTask')}
         >
           <Plus className="w-6 h-6" />
@@ -287,7 +287,7 @@ export function Calendar({
               value={newTodoText}
               onChange={e => setNewTodoText(e.target.value)}
               placeholder={t('home.whatNeedsToBeDone')}
-              className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+              className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-theme-primary transition-all"
               autoFocus
             />
           </div>
@@ -305,7 +305,7 @@ export function Calendar({
             <button
               type="submit"
               disabled={!newTodoText.trim()}
-              className="w-full py-3 bg-indigo-500 hover:bg-indigo-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all shadow-lg"
+              className="w-full py-3 bg-gradient-to-r from-theme-primary to-theme-accent hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all shadow-lg"
             >
               {t('home.addTask')}
             </button>

@@ -48,7 +48,7 @@ function RegisterPage() {
       <div className="w-full max-w-md">
         <div className="rounded-3xl border border-white/20 bg-white/10 p-5 shadow-2xl backdrop-blur-lg sm:p-8">
           <div className="mb-6 flex items-center justify-center sm:mb-8">
-            <div className="rounded-2xl bg-gradient-to-br from-purple-500 to-pink-500 p-3 sm:p-4">
+            <div className="rounded-2xl bg-gradient-to-br from-theme-accent to-theme-primary p-3 sm:p-4 shadow-lg">
               <UserPlus className="h-7 w-7 text-white sm:h-8 sm:w-8" />
             </div>
           </div>
@@ -76,7 +76,7 @@ function RegisterPage() {
                 type="text"
                 value={formData.name}
                 onChange={e => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-theme-accent transition-all"
                 placeholder={t('auth.namePlaceholder')}
                 required
                 autoFocus
@@ -107,7 +107,7 @@ function RegisterPage() {
                 type="password"
                 value={formData.password}
                 onChange={e => setFormData({ ...formData, password: e.target.value })}
-                className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-purple-500 transition-all"
+                className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-theme-accent transition-all"
                 placeholder={t('auth.passwordPlaceholder')}
                 required
                 minLength={6}
@@ -121,7 +121,7 @@ function RegisterPage() {
               id="register-submit-button"
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all shadow-lg hover:scale-105"
+              className="w-full py-3 bg-gradient-to-r from-theme-accent to-theme-primary hover:opacity-90 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl text-white font-medium transition-all shadow-lg hover:scale-105"
             >
               {loading ? t('auth.creatingAccount') : t('auth.signUp')}
             </button>
@@ -134,7 +134,7 @@ function RegisterPage() {
               <Link
                 id="register-to-login-link"
                 to="/login"
-                className="text-purple-400 hover:text-purple-300 font-medium transition-colors"
+                className="text-theme-accent hover:opacity-80 font-medium transition-colors"
               >
                 {t('auth.signIn')}
               </Link>

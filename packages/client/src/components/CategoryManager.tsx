@@ -96,7 +96,7 @@ export function CategoryManager({ categories, onAddCategory, onUpdateCategory, o
         {!isAdding && (
           <button
             onClick={() => setIsAdding(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 rounded-xl text-white font-medium transition-all hover:scale-105 shadow-lg"
+            className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-theme-primary to-theme-accent hover:opacity-90 rounded-xl text-white font-medium transition-all hover:scale-105 shadow-lg"
           >
             <Plus className="w-4 h-4" />
             {t('categories.addCategory')}
@@ -119,7 +119,7 @@ export function CategoryManager({ categories, onAddCategory, onUpdateCategory, o
               value={formData.name}
               onChange={e => setFormData({ ...formData, name: e.target.value })}
               placeholder={t('categories.enterCategoryName')}
-              className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+              className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-theme-primary transition-all"
               autoFocus
             />
           </div>
@@ -139,7 +139,7 @@ export function CategoryManager({ categories, onAddCategory, onUpdateCategory, o
                     className={cn(
                       'p-3 rounded-xl transition-all duration-200 border-2',
                       isSelected
-                        ? 'bg-indigo-500 border-indigo-400 scale-110'
+                        ? 'bg-theme-primary border-white/20 scale-110 shadow-lg'
                         : 'bg-white/5 border-white/10 hover:bg-white/10',
                     )}
                   >
@@ -179,7 +179,7 @@ export function CategoryManager({ categories, onAddCategory, onUpdateCategory, o
             <button
               type="submit"
               disabled={!formData.name.trim()}
-              className="flex-1 px-4 py-2 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 rounded-xl text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex-1 px-4 py-2 bg-gradient-to-r from-theme-primary to-theme-accent hover:opacity-90 rounded-xl text-white font-medium transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
             >
               {editingId ? t('common.update') : t('common.create')}
             </button>

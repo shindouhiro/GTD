@@ -89,12 +89,12 @@ export function DaySidePanel({
                   value={newTodoText}
                   onChange={e => setNewTodoText(e.target.value)}
                   placeholder={t('home.addNewTask')}
-                  className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 pr-12 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
+                  className="w-full bg-black/20 border border-white/10 rounded-xl py-3 px-4 pr-12 text-white placeholder-white/40 focus:outline-none focus:ring-2 focus:ring-theme-primary transition-all"
                 />
                 <button
                   type="submit"
                   disabled={!newTodoText.trim()}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-indigo-500 rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed hover:bg-indigo-600 transition-colors"
+                  className="absolute right-2 top-1/2 -translate-y-1/2 p-1.5 bg-gradient-to-br from-theme-primary to-theme-accent rounded-lg text-white disabled:opacity-50 disabled:cursor-not-allowed hover:opacity-90 transition-all"
                 >
                   <Plus className="w-4 h-4" />
                 </button>
@@ -130,7 +130,7 @@ export function DaySidePanel({
                                     'w-6 h-6 rounded-full border-2 flex items-center justify-center transition-all flex-shrink-0',
                                     todo.completed
                                       ? 'bg-green-500 border-green-500'
-                                      : 'border-white/30 hover:border-indigo-400',
+                                      : 'border-white/30 hover:border-theme-primary',
                                   )}
                                 >
                                   {todo.completed && <Check className="w-3.5 h-3.5 text-white" />}

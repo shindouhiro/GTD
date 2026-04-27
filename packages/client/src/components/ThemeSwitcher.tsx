@@ -1,6 +1,5 @@
 import { Palette, Settings2 } from 'lucide-react'
 import { useState } from 'react'
-import { useTranslation } from 'react-i18next'
 import { type Theme, useTheme } from '@/hooks/useTheme'
 import { cn } from '@/lib/utils'
 
@@ -15,10 +14,8 @@ const themes: { id: Theme; name: string; color: string }[] = [
 ]
 
 export function ThemeSwitcher({ className }: { className?: string }) {
-  const { t } = useTranslation()
   const { theme, setTheme, customColors, setCustomColors } = useTheme()
   const [isOpen, setIsOpen] = useState(false)
-  const [showCustomConfig, setShowCustomConfig] = useState(false)
 
   const handleThemeChange = (themeId: Theme) => {
     setTheme(themeId)

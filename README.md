@@ -10,7 +10,6 @@
 - 📊 **多维统计分析**：直观展示任务完成趋势，实时把控工作效率。
 - 🎨 **多套皮肤主题**：内置 Default、Ocean、Forest、Cyberpunk 等多种精美皮肤，支持一键切换并自动保存偏好。
 - 📝 **自动变更日志**：基于 **changelogithub** 规范，自动生成版本更新日志，确保项目透明度与规范性。
-- 🐳 **Docker 极速部署**：采用多阶段构建与 `pnpm deploy` 技术，镜像体积从 1.9GB 极致缩减至约 200MB。
 - 🛡️ **安全认证**：基于 JWT 的用户认证体系，保障数据安全。
 
 ## 📸 项目预览
@@ -18,20 +17,19 @@
 <div align="center">
   <img src="https://i0.hdslb.com/bfs/openplatform/174f18a1842f3279d4623abd3d34044782074b05.png" width="800" alt="日历视图" />
   <p><i>智能日历视图 - 为您呈现清晰的日程安排</i></p>
-  
+
   <br />
-  
+
   <img src="https://i0.hdslb.com/bfs/openplatform/00af6f4f722630d955520616cda617a5555e58a2.png" width="800" alt="表格视图" />
   <p><i>列表表格视图 - 高效管理繁杂任务</i></p>
-  
+
   <br />
-  
+
   <img src="https://i0.hdslb.com/bfs/openplatform/105472907c134172351d6fc0ee33dd088163e331.png" width="800" alt="移动端适配" />
   <p><i>统计分析与移动端适配 - 随时随地把控进度</i></p>
 </div>
 
 ## 📁 项目结构
-
 
 ```
 calendar-todo-app/
@@ -46,6 +44,7 @@ calendar-todo-app/
 ## 🚀 快速开始
 
 ### 前置要求
+
 - Node.js >= 20
 - pnpm >= 10
 
@@ -85,6 +84,7 @@ pnpm tauri:build
 ```
 
 说明：
+
 - 打包时会将后端放入 `src-tauri/resources/server`，并由 Tauri 启动时自动拉起。
 - 生产数据库默认写入系统应用数据目录（`app_data_dir/todo.db`），不会污染项目目录。
 - 如仅需 macOS `.app`，可执行 `node scripts/run-tauri.mjs build --bundles app`。
@@ -116,12 +116,12 @@ services:
       context: .
       dockerfile: Dockerfile
     ports:
-      - "3003:3001"
+      - '3003:3001'
     volumes:
       - ./data:/app/data
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3001/health"]
+      test: [CMD, wget, --no-verbose, --tries=1, --spider, 'http://localhost:3001/health']
       interval: 30s
       timeout: 3s
       retries: 3
@@ -157,6 +157,7 @@ docker-compose restart
 ## 📦 技术栈详情
 
 ### 前端 (@todo-app/client)
+
 - **框架**: React 19 + TypeScript
 - **路由**: TanStack Router
 - **样式**: Tailwind CSS (Lucide Icons)
@@ -164,6 +165,7 @@ docker-compose restart
 - **状态管理**: TanStack Query / React Hooks
 
 ### 后端 (@todo-app/server)
+
 - **运行环境**: Node.js + tsx (Watch mode)
 - **数据库**: SQLite (better-sqlite3)
 - **架构**: RESTful API + Middleware

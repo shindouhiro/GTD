@@ -15,7 +15,7 @@ FROM rust:1.85-bookworm AS backend
 WORKDIR /app
 
 COPY src-tauri src-tauri
-RUN cargo build --release --no-default-features --manifest-path src-tauri/Cargo.toml --bin gtd-server
+RUN cargo build --release --no-default-features --features server-bin --manifest-path src-tauri/Cargo.toml --bin gtd-server
 
 FROM debian:bookworm-slim AS runner
 WORKDIR /app

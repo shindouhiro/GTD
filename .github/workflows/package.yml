@@ -5,9 +5,13 @@ on:
     branches:
       - main
       - master
-      - codex/tauri-macos-windows-backend
+      - 'codex/**'
     tags:
       - 'v*'
+  pull_request:
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -43,9 +47,6 @@ jobs:
       - name: install app dependencies
         run: pnpm install
 
-      - name: prepare resources
-        run: pnpm tauri:prepare
-
       - name: Rename Product Name for clarity
         shell: bash
         run: |
@@ -58,13 +59,23 @@ jobs:
           fi
 
       - name: build and package
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          if [ "${{ matrix.platform }}" == "macos-latest" ]; then
+            pnpm tauri build --target universal-apple-darwin
+          else
+            pnpm tauri build
+          fi
+
+      - name: upload app bundles
+        uses: actions/upload-artifact@v4
         with:
-          tagName: v__VERSION__
-          releaseName: "App Release v__VERSION__"
-          releaseBody: "Automated high-performance build."
-          releaseDraft: false
-          prerelease: false
-          args: ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+          name: GTD-${{ matrix.platform }}
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/**/*.app
+            src-tauri/target/release/bundle/**/*.dmg
+            src-tauri/target/release/bundle/**/*.msi
+            src-tauri/target/release/bundle/**/*.exe
+            src-tauri/target/universal-apple-darwin/release/bundle/**/*.app
+            src-tauri/target/universal-apple-darwin/release/bundle/**/*.dmg

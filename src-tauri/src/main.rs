@@ -6,7 +6,7 @@ use std::sync::{mpsc, Mutex};
 use std::time::Duration;
 
 use gtd_desktop::backend::{self, BackendConfig, RunMode};
-use tauri::Manager;
+use tauri::{CustomMenuItem, Manager, Menu, Submenu};
 use tokio::sync::oneshot;
 
 struct BackendState {
@@ -35,8 +35,105 @@ fn inject_runtime(window: &tauri::Window, addr: SocketAddr) {
     let _ = window.eval(&script);
 }
 
+fn menu_item(id: &str, title: &str, accelerator: Option<&str>) -> CustomMenuItem {
+    let item = CustomMenuItem::new(id.to_string(), title.to_string());
+    match accelerator {
+        Some(accelerator) => item.accelerator(accelerator),
+        None => item,
+    }
+}
+
+fn build_app_menu() -> Menu {
+    let app_menu = Menu::new()
+        .add_item(menu_item("app-about", "关于 GTD", None))
+        .add_item(menu_item("app-settings", "偏好设置...", Some("CmdOrCtrl+,")))
+        .add_native_item(tauri::MenuItem::Separator)
+        .add_item(menu_item("app-show-window", "显示窗口", None))
+        .add_item(menu_item("app-hide-window", "隐藏窗口", Some("CmdOrCtrl+H")))
+        .add_item(menu_item("app-quit", "退出 GTD", Some("CmdOrCtrl+Q")));
+
+    let navigation_menu = Menu::new()
+        .add_item(menu_item("nav-home", "任务首页", Some("CmdOrCtrl+1")))
+        .add_item(menu_item("nav-categories", "分类管理", Some("CmdOrCtrl+2")))
+        .add_item(menu_item("nav-statistics", "统计", Some("CmdOrCtrl+3")))
+        .add_item(menu_item("nav-settings", "设置", Some("CmdOrCtrl+4")));
+
+    let view_menu = Menu::new()
+        .add_item(menu_item("view-calendar", "日历视图", Some("CmdOrCtrl+Shift+C")))
+        .add_item(menu_item("view-table", "列表视图", Some("CmdOrCtrl+Shift+T")))
+        .add_native_item(tauri::MenuItem::Separator)
+        .add_item(menu_item("view-refresh", "刷新数据", Some("CmdOrCtrl+R")));
+
+    let window_menu = Menu::new()
+        .add_item(menu_item("window-show", "显示窗口", None))
+        .add_item(menu_item("window-minimize", "最小化", Some("CmdOrCtrl+M")))
+        .add_item(menu_item("window-fullscreen", "切换全屏", Some("CmdOrCtrl+Shift+F")))
+        .add_item(menu_item("window-reload", "重新载入", Some("CmdOrCtrl+Shift+R")))
+        .add_native_item(tauri::MenuItem::Separator)
+        .add_item(menu_item("window-close", "关闭窗口", Some("CmdOrCtrl+W")));
+
+    Menu::new()
+        .add_submenu(Submenu::new("GTD", app_menu))
+        .add_submenu(Submenu::new("导航", navigation_menu))
+        .add_submenu(Submenu::new("视图", view_menu))
+        .add_submenu(Submenu::new("窗口", window_menu))
+}
+
+fn emit_frontend_command(window: &tauri::Window, command: &str) {
+    let script = format!(
+        "window.dispatchEvent(new CustomEvent('gtd-menu-command', {{ detail: '{}' }}));",
+        command
+    );
+    let _ = window.eval(&script);
+}
+
+fn handle_menu_event(window: &tauri::Window, menu_item_id: &str) {
+    match menu_item_id {
+        "app-about" => {
+            let _ = tauri::api::dialog::message::<tauri::Wry>(
+                Some(window),
+                "关于 GTD",
+                "GTD 桌面应用\nRust 内置后端，本地数据存储。",
+            );
+        }
+        "app-settings" | "nav-settings" => emit_frontend_command(window, "nav:settings"),
+        "app-show-window" | "window-show" => {
+            let _ = window.show();
+            let _ = window.set_focus();
+        }
+        "app-hide-window" => {
+            let _ = window.hide();
+        }
+        "app-quit" => window.app_handle().exit(0),
+        "nav-home" => emit_frontend_command(window, "nav:home"),
+        "nav-categories" => emit_frontend_command(window, "nav:categories"),
+        "nav-statistics" => emit_frontend_command(window, "nav:statistics"),
+        "view-calendar" => emit_frontend_command(window, "view:calendar"),
+        "view-table" => emit_frontend_command(window, "view:table"),
+        "view-refresh" => emit_frontend_command(window, "view:refresh"),
+        "window-minimize" => {
+            let _ = window.minimize();
+        }
+        "window-fullscreen" => {
+            let is_fullscreen = window.is_fullscreen().unwrap_or(false);
+            let _ = window.set_fullscreen(!is_fullscreen);
+        }
+        "window-reload" => {
+            let _ = window.eval("window.location.reload();");
+        }
+        "window-close" => {
+            let _ = window.close();
+        }
+        _ => {}
+    }
+}
+
 fn main() {
     tauri::Builder::default()
+        .menu(build_app_menu())
+        .on_menu_event(|event| {
+            handle_menu_event(event.window(), event.menu_item_id());
+        })
         .manage(BackendState {
             shutdown: Mutex::new(None),
             port: Mutex::new(0),

@@ -1,5 +1,5 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { AppHeader } from '@/components/AppHeader'
 import { Calendar } from '@/components/Calendar'
 import { DataToolbar } from '@/components/DataToolbar'
@@ -26,6 +26,30 @@ function App() {
   const [viewMode, setViewMode] = useState<ViewMode>('calendar')
   const [dateFilter, setDateFilter] = useState<DateFilterType>('today')
   const viewOptions = useViewOptions()
+
+  useEffect(() => {
+    const handleHomeMenuCommand = (event: Event) => {
+      const command = (event as CustomEvent<string>).detail
+
+      switch (command) {
+        case 'view:calendar':
+          setViewMode('calendar')
+          break
+        case 'view:table':
+          setViewMode('table')
+          break
+        case 'refresh':
+          void fetchData()
+          break
+      }
+    }
+
+    window.addEventListener('gtd-home-menu-command', handleHomeMenuCommand)
+
+    return () => {
+      window.removeEventListener('gtd-home-menu-command', handleHomeMenuCommand)
+    }
+  }, [fetchData])
 
   const filteredTodos = todos.filter((todo) => {
     const todoDate = new Date(todo.date)

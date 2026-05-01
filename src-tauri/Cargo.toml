@@ -9,7 +9,7 @@ edition = "2021"
 tauri-build = { version = "=1.5.5", features = [] }
 
 [dependencies]
-tauri = { version = "=1.8.3", features = ["dialog-all"], optional = true }
+tauri = { version = "=1.8.3", features = ["dialog-all", "system-tray"], optional = true }
 tempfile = "=3.14.0"
 uuid = { version = "=1.11.0", features = ["v4"] }
 axum = "0.7"

@@ -31,6 +31,12 @@
         "resizable": true
       }
     ],
+    "systemTray": {
+      "iconPath": "icons/32x32.png",
+      "iconAsTemplate": true,
+      "menuOnLeftClick": true,
+      "title": "GTD"
+    },
     "bundle": {
       "active": true,
       "identifier": "com.hikaru.gtd",

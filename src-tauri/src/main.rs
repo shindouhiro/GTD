@@ -6,7 +6,10 @@ use std::sync::{mpsc, Mutex};
 use std::time::Duration;
 
 use gtd_desktop::backend::{self, BackendConfig, RunMode};
-use tauri::{CustomMenuItem, Manager, Menu, Submenu};
+use tauri::{
+    CustomMenuItem, Manager, Menu, Submenu, SystemTray, SystemTrayEvent, SystemTrayMenu,
+    SystemTrayMenuItem,
+};
 use tokio::sync::oneshot;
 
 struct BackendState {
@@ -79,12 +82,64 @@ fn build_app_menu() -> Menu {
         .add_submenu(Submenu::new("窗口", window_menu))
 }
 
+fn build_tray_menu() -> SystemTrayMenu {
+    SystemTrayMenu::new()
+        .add_item(CustomMenuItem::new(
+            "tray-show-window".to_string(),
+            "显示 GTD",
+        ))
+        .add_item(CustomMenuItem::new("tray-nav-home".to_string(), "任务首页"))
+        .add_item(CustomMenuItem::new(
+            "tray-nav-categories".to_string(),
+            "分类管理",
+        ))
+        .add_item(CustomMenuItem::new("tray-nav-statistics".to_string(), "统计"))
+        .add_item(CustomMenuItem::new("tray-nav-settings".to_string(), "设置"))
+        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(CustomMenuItem::new(
+            "tray-view-calendar".to_string(),
+            "切换到日历视图",
+        ))
+        .add_item(CustomMenuItem::new(
+            "tray-view-table".to_string(),
+            "切换到列表视图",
+        ))
+        .add_item(CustomMenuItem::new("tray-refresh".to_string(), "刷新数据"))
+        .add_native_item(SystemTrayMenuItem::Separator)
+        .add_item(CustomMenuItem::new(
+            "tray-hide-window".to_string(),
+            "隐藏窗口",
+        ))
+        .add_item(CustomMenuItem::new("tray-quit".to_string(), "退出 GTD"))
+}
+
+fn build_system_tray() -> SystemTray {
+    let tray = SystemTray::new()
+        .with_menu(build_tray_menu())
+        .with_tooltip("GTD");
+
+    #[cfg(target_os = "macos")]
+    let tray = tray
+        .with_title("GTD")
+        .with_icon_as_template(true)
+        .with_menu_on_left_click(true);
+
+    tray
+}
+
 fn emit_frontend_command(window: &tauri::Window, command: &str) {
     let script = format!(
         "window.dispatchEvent(new CustomEvent('gtd-menu-command', {{ detail: '{}' }}));",
         command
     );
     let _ = window.eval(&script);
+}
+
+fn show_main_window(app: &tauri::AppHandle) -> Option<tauri::Window> {
+    let window = app.get_window("main")?;
+    let _ = window.show();
+    let _ = window.set_focus();
+    Some(window)
 }
 
 fn handle_menu_event(window: &tauri::Window, menu_item_id: &str) {
@@ -128,11 +183,71 @@ fn handle_menu_event(window: &tauri::Window, menu_item_id: &str) {
     }
 }
 
+fn handle_tray_menu_event(app: &tauri::AppHandle, menu_item_id: &str) {
+    match menu_item_id {
+        "tray-show-window" => {
+            let _ = show_main_window(app);
+        }
+        "tray-nav-home" => {
+            if let Some(window) = show_main_window(app) {
+                emit_frontend_command(&window, "nav:home");
+            }
+        }
+        "tray-nav-categories" => {
+            if let Some(window) = show_main_window(app) {
+                emit_frontend_command(&window, "nav:categories");
+            }
+        }
+        "tray-nav-statistics" => {
+            if let Some(window) = show_main_window(app) {
+                emit_frontend_command(&window, "nav:statistics");
+            }
+        }
+        "tray-nav-settings" => {
+            if let Some(window) = show_main_window(app) {
+                emit_frontend_command(&window, "nav:settings");
+            }
+        }
+        "tray-view-calendar" => {
+            if let Some(window) = show_main_window(app) {
+                emit_frontend_command(&window, "view:calendar");
+            }
+        }
+        "tray-view-table" => {
+            if let Some(window) = show_main_window(app) {
+                emit_frontend_command(&window, "view:table");
+            }
+        }
+        "tray-refresh" => {
+            if let Some(window) = show_main_window(app) {
+                emit_frontend_command(&window, "view:refresh");
+            }
+        }
+        "tray-hide-window" => {
+            if let Some(window) = app.get_window("main") {
+                let _ = window.hide();
+            }
+        }
+        "tray-quit" => app.exit(0),
+        _ => {}
+    }
+}
+
 fn main() {
     tauri::Builder::default()
         .menu(build_app_menu())
+        .system_tray(build_system_tray())
         .on_menu_event(|event| {
             handle_menu_event(event.window(), event.menu_item_id());
+        })
+        .on_system_tray_event(|app, event| match event {
+            SystemTrayEvent::LeftClick { .. } => {
+                let _ = show_main_window(app);
+            }
+            SystemTrayEvent::MenuItemClick { id, .. } => {
+                handle_tray_menu_event(app, id.as_str());
+            }
+            _ => {}
         })
         .manage(BackendState {
             shutdown: Mutex::new(None),

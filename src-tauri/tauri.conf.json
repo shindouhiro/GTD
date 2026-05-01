@@ -1,8 +1,8 @@
 {
   "$schema": "https://schema.tauri.app/config/1",
   "build": {
-    "beforeDevCommand": "node -e \"const fs=require('node:fs');const path=require('node:path');const cp=require('node:child_process');let d=process.cwd();while(!fs.existsSync(path.join(d,'package.json'))){const p=path.dirname(d);if(p===d)throw new Error('repo root not found');d=p;}const r=cp.spawnSync('pnpm',['--dir',d,'dev'],{stdio:'inherit',shell:process.platform==='win32'});process.exit(r.status??1)\"",
-    "beforeBuildCommand": "node -e \"const fs=require('node:fs');const path=require('node:path');const cp=require('node:child_process');let d=process.cwd();while(!fs.existsSync(path.join(d,'scripts','prepare-tauri-resources.mjs'))){const p=path.dirname(d);if(p===d)throw new Error('prepare script not found');d=p;}const r=cp.spawnSync(process.execPath,[path.join(d,'scripts','prepare-tauri-resources.mjs')],{stdio:'inherit'});process.exit(r.status??1)\"",
+    "beforeDevCommand": "node scripts/tauri-before-dev.mjs",
+    "beforeBuildCommand": "node scripts/tauri-before-build.mjs",
     "devPath": "http://localhost:3000",
     "distDir": "../packages/client/dist"
   },
@@ -31,6 +31,12 @@
         "resizable": true
       }
     ],
+    "systemTray": {
+      "iconPath": "icons/32x32.png",
+      "iconAsTemplate": true,
+      "menuOnLeftClick": true,
+      "title": "GTD"
+    },
     "bundle": {
       "active": true,
       "identifier": "com.hikaru.gtd",
@@ -40,9 +46,7 @@
         "nsis"
       ],
       "resources": [
-        "resources/server/**/*",
-        "resources/client/**/*",
-        "resources/runtime/**/*"
+        "resources/client/**/*"
       ],
       "icon": [
         "icons/32x32.png",

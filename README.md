@@ -35,7 +35,7 @@
 calendar-todo-app/
 ├── packages/
 20: │   ├── client/          # React 前端 (Vite + Tailwind CSS)
-15: │   └── server/          # Express 后端 (SQLite + TypeScript)
+15: │   └── server/          # 旧版 TypeScript 后端（已由 Rust 后端替代）
 22: ├── pnpm-workspace.yaml  # Monorepo 工作区配置 (PNPM Catalogs)
 24: ├── Dockerfile           # 极致优化的多阶段构建脚本
 25: └── docker-compose.yml   # 一键启动配置
@@ -73,10 +73,10 @@ pnpm build
 
 ### 桌面端打包 (Tauri)
 
-项目已支持将前端 + Node 后端一起打包到桌面应用（macOS / Windows）。
+项目已支持将前端 + Rust 后端一起打包到桌面应用（macOS / Windows）。
 
 ```bash
-# 1) 准备打包资源（构建前端、部署后端依赖、复制 Node runtime）
+# 1) 准备打包资源（构建前端静态资源）
 pnpm tauri:prepare
 
 # 2) 执行桌面打包（默认 targets=all）
@@ -85,8 +85,9 @@ pnpm tauri:build
 
 说明：
 
-- 打包时会将后端放入 `src-tauri/resources/server`，并由 Tauri 启动时自动拉起。
+- 桌面端后端由 Tauri 进程内的 Rust/Axum 服务提供，不再打包 Node runtime。
 - 生产数据库默认写入系统应用数据目录（`app_data_dir/todo.db`），不会污染项目目录。
+- 桌面端默认免登录；Web/Docker 模式仍保留注册、登录和 JWT 鉴权。
 - 如仅需 macOS `.app`，可执行 `node scripts/run-tauri.mjs build --bundles app`。
 
 ## 🐳 Docker 生产部署 (推荐)
@@ -164,12 +165,12 @@ docker-compose restart
 - **日历库**: date-fns + lunar-javascript (农历支持)
 - **状态管理**: TanStack Query / React Hooks
 
-### 后端 (@todo-app/server)
+### 后端 (Rust / src-tauri)
 
-- **运行环境**: Node.js + tsx (Watch mode)
-- **数据库**: SQLite (better-sqlite3)
-- **架构**: RESTful API + Middleware
-- **认证**: JWT (jsonwebtoken) + bcrypt
+- **运行环境**: Rust + Axum + Tokio
+- **数据库**: SQLite (sqlx)
+- **架构**: RESTful API，桌面内置 HTTP 服务，Web/Docker 独立服务二进制
+- **认证**: Web/Docker 使用 JWT + bcrypt，桌面端使用本地免登录模式
 
 ## 📝 开源协议
 

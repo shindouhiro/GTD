@@ -89,7 +89,12 @@ docker stop calendar-todo-test && docker rm calendar-todo-test
 
 ### 环境变量
 
-应用使用浏览器本地存储（IndexedDB），无需额外环境变量。
+后端使用 Rust/Axum + SQLite。生产部署至少应配置持久化数据库路径和 JWT 密钥：
+
+- `GTD_MODE=server`
+- `DB_PATH=/app/data/todo.db`
+- `JWT_SECRET=<your-production-secret>`
+- `CLIENT_DIST_PATH=/app/client/dist`
 
 ### 资源要求
 

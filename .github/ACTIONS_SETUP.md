@@ -51,9 +51,11 @@
    - 构建并推送 `v1.0` 标签
    - 构建并推送 `v1` 标签
    - 构建并推送 `latest` 标签
+   - 构建 macOS / Windows 桌面安装包，并上传到对应的 GitHub Release
 
 3. **Pull Request**
    - 仅构建，不推送镜像
+   - 桌面安装包只作为 GitHub Actions artifact 提供下载，不会更新 GitHub Release
    - 用于验证 PR 是否能成功构建
 
 ### 手动触发
@@ -203,7 +205,10 @@ git push origin v1.0.0
 
 # 4. 等待 GitHub Actions 完成构建
 # 5. 验证镜像已推送到 Docker Hub
+# 6. 打开 GitHub Release，确认 macOS / Windows 桌面安装包已作为 Assets 上传
 ```
+
+> 注意：GitHub Release 只会在推送 `v*` 标签时更新。PR 或普通分支构建成功后，下载包位于对应 Actions run 页面底部的 **Artifacts** 区域，不会自动出现在 Release 页面。
 
 ### 语义化版本
 

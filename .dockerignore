@@ -2,6 +2,11 @@ node_modules
 packages/*/node_modules
 dist
 packages/*/dist
+src-tauri/target
+src-tauri/resources
+data
+*.db
+*.db.backup
 .git
 .npm
 .pnpm-store

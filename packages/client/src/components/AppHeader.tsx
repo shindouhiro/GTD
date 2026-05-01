@@ -1,12 +1,13 @@
 import { Link, useNavigate } from '@tanstack/react-router'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { authApi } from '@/lib/auth'
+import { authApi, isDesktopMode } from '@/lib/auth'
 
 export function AppHeader() {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
+  const desktopMode = isDesktopMode()
 
   const handleLogout = async () => {
     if (isLoggingOut)
@@ -99,28 +100,30 @@ export function AppHeader() {
             </svg>
             {t('navigation.settings')}
           </Link>
-          <button
-            id="app-header-logout-button"
-            type="button"
-            onClick={handleLogout}
-            disabled={isLoggingOut}
-            className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:opacity-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm md:text-base"
-          >
-            <svg
-              className="h-4 w-4 sm:h-5 sm:w-5"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
+          {!desktopMode && (
+            <button
+              id="app-header-logout-button"
+              type="button"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="group flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-pink-500 px-3 py-2 text-xs font-medium text-white shadow-lg transition-all hover:opacity-90 hover:scale-105 disabled:cursor-not-allowed disabled:opacity-60 sm:px-4 sm:text-sm md:text-base"
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
-              />
-            </svg>
-            {t('navigation.logout')}
-          </button>
+              <svg
+                className="h-4 w-4 sm:h-5 sm:w-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
+                />
+              </svg>
+              {t('navigation.logout')}
+            </button>
+          )}
         </div>
       </div>
       <p className="px-2 text-sm text-white/60 sm:text-base md:text-lg">{t('home.subtitle')}</p>

@@ -21,10 +21,24 @@ export interface AuthResponse {
   token: string
 }
 
-const API_URL = import.meta.env.VITE_API_URL || '/api'
 const TOKEN_KEY = 'auth_token'
 const USER_KEY = 'auth_user'
 const REQUEST_TIMEOUT_MS = 10000
+
+declare global {
+  interface Window {
+    __GTD_DESKTOP__?: boolean
+    __TAURI_API_URL__?: string
+  }
+}
+
+export function isDesktopMode(): boolean {
+  return Boolean(window.__GTD_DESKTOP__ || window.__TAURI_API_URL__)
+}
+
+export function getApiBaseUrl(): string {
+  return window.__TAURI_API_URL__ || import.meta.env.VITE_API_URL || '/api'
+}
 
 async function fetchWithTimeout(input: RequestInfo | URL, init: RequestInit = {}): Promise<Response> {
   const controller = new AbortController()
@@ -70,10 +84,21 @@ export const tokenManager = {
 export const userManager = {
   getUser: (): User | null => {
     const userJson = localStorage.getItem(USER_KEY)
-    if (!userJson) return null
+    if (!userJson && isDesktopMode()) {
+      return {
+        id: 'demo-user',
+        email: 'local@gtd.desktop',
+        name: '本地用户',
+        createdAt: '',
+      }
+    }
+    if (!userJson)
+      return null
+
     try {
       return JSON.parse(userJson)
-    } catch {
+    }
+    catch {
       return null
     }
   },
@@ -90,7 +115,7 @@ export const userManager = {
 // Auth API
 export const authApi = {
   register: async (data: RegisterRequest): Promise<AuthResponse> => {
-    const res = await fetchWithTimeout(`${API_URL}/auth/register`, {
+    const res = await fetchWithTimeout(`${getApiBaseUrl()}/auth/register`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -117,7 +142,7 @@ export const authApi = {
   },
 
   login: async (data: LoginRequest): Promise<AuthResponse> => {
-    const res = await fetchWithTimeout(`${API_URL}/auth/login`, {
+    const res = await fetchWithTimeout(`${getApiBaseUrl()}/auth/login`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(data),
@@ -144,12 +169,15 @@ export const authApi = {
   },
 
   logout: (): void => {
+    if (isDesktopMode())
+      return
+
     tokenManager.removeToken()
     userManager.removeUser()
   },
 
   getCurrentUser: async (): Promise<User> => {
-    const res = await fetchWithTimeout(`${API_URL}/auth/me`, {
+    const res = await fetchWithTimeout(`${getApiBaseUrl()}/auth/me`, {
       headers: {
         ...tokenManager.getAuthHeaders(),
       },
@@ -173,6 +201,9 @@ export const authApi = {
   },
 
   isAuthenticated: (): boolean => {
+    if (isDesktopMode())
+      return true
+
     return tokenManager.getToken() !== null
   },
 }

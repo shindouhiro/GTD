@@ -1,11 +1,16 @@
 import type { RegisterRequest } from '@/lib/auth'
-import { createFileRoute, Link, useNavigate } from '@tanstack/react-router'
+import { createFileRoute, Link, redirect, useNavigate } from '@tanstack/react-router'
 import { UserPlus } from 'lucide-react'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { authApi } from '@/lib/auth'
+import { authApi, isDesktopMode } from '@/lib/auth'
 
 export const Route = createFileRoute('/register')({
+  beforeLoad: async () => {
+    if (isDesktopMode()) {
+      throw redirect({ to: '/' })
+    }
+  },
   component: RegisterPage,
 })
 

@@ -4,7 +4,7 @@ import { spawnSync } from 'node:child_process'
 const args = process.argv.slice(2)
 
 if (args.length === 0) {
-  console.error('缺少 tauri 子命令，例如 dev 或 build')
+  console.error('缺少 cargo 参数')
   process.exit(1)
 }
 
@@ -21,7 +21,7 @@ const env = {
   PATH: cargoBinDir ? `${cargoBinDir}${pathDelimiter}${envPath}` : envPath,
 }
 
-const result = spawnSync('pnpm', ['exec', 'tauri', ...args], {
+const result = spawnSync('cargo', args, {
   stdio: 'inherit',
   env,
   shell: process.platform === 'win32',

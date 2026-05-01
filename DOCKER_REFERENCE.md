@@ -180,7 +180,7 @@ ports:
 ```
 
 - **3000**: 主机（你的电脑）上的端口
-- **3001**: 容器内 Node.js 监听的端口
+- **3001**: 容器内 Rust/Axum 服务监听的端口
 - **访问**: http://localhost:3000
 
 **多端口映射示例**:
@@ -793,12 +793,16 @@ docker network inspect calendar-network
 
 ## 环境变量
 
-虽然此应用不需要环境变量，但如果需要可以这样设置：
+Rust 后端建议显式设置运行模式、数据库路径和 JWT 密钥：
 
 ```bash
 # 设置环境变量
 docker run -d \
+  -e GTD_MODE=server \
   -e NODE_ENV=production \
+  -e DB_PATH=/app/data/todo.db \
+  -e JWT_SECRET=change-this-secret-before-production \
+  -v $(pwd)/data:/app/data \
   -p 3000:3001 \
   --name calendar-todo \
   shindouhiro/calendar-todo:latest
@@ -806,12 +810,14 @@ docker run -d \
 
 ## 卷挂载
 
-如果需要持久化数据或自定义配置：
+如果需要持久化数据：
 
 ```bash
-# 挂载自定义 nginx 配置
 docker run -d \
-  -v $(pwd)/custom-nginx.conf:/etc/nginx/conf.d/default.conf \
+  -e GTD_MODE=server \
+  -e DB_PATH=/app/data/todo.db \
+  -e JWT_SECRET=change-this-secret-before-production \
+  -v $(pwd)/data:/app/data \
   -p 3000:3001 \
   --name calendar-todo \
   shindouhiro/calendar-todo:latest

@@ -5,9 +5,12 @@ on:
     branches:
       - main
       - master
-      - codex/tauri-macos-windows-backend
     tags:
       - 'v*'
+  pull_request:
+    branches:
+      - main
+      - master
   workflow_dispatch:
 
 jobs:
@@ -43,9 +46,6 @@ jobs:
       - name: install app dependencies
         run: pnpm install
 
-      - name: prepare resources
-        run: pnpm tauri:prepare
-
       - name: Rename Product Name for clarity
         shell: bash
         run: |
@@ -58,13 +58,79 @@ jobs:
           fi
 
       - name: build and package
-        uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          if [ "${{ matrix.platform }}" == "macos-latest" ]; then
+            pnpm tauri build --target universal-apple-darwin
+          else
+            pnpm tauri build
+          fi
+
+      - name: upload app bundles
+        uses: actions/upload-artifact@v4
         with:
-          tagName: v__VERSION__
-          releaseName: "App Release v__VERSION__"
-          releaseBody: "Automated high-performance build."
-          releaseDraft: false
-          prerelease: false
-          args: ${{ matrix.platform == 'macos-latest' && '--target universal-apple-darwin' || '' }}
+          name: GTD-${{ matrix.platform }}
+          if-no-files-found: error
+          path: |
+            src-tauri/target/release/bundle/**/*.app
+            src-tauri/target/release/bundle/**/*.dmg
+            src-tauri/target/release/bundle/**/*.msi
+            src-tauri/target/release/bundle/**/*.exe
+            src-tauri/target/universal-apple-darwin/release/bundle/**/*.app
+            src-tauri/target/universal-apple-darwin/release/bundle/**/*.dmg
+
+      - name: collect macOS release assets
+        if: startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'macos-latest'
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p release-assets
+
+          find src-tauri/target/universal-apple-darwin/release/bundle \
+            -type f -name '*.dmg' \
+            -exec cp '{}' release-assets/ \;
+
+          while IFS= read -r app; do
+            app_name="$(basename "$app" .app)"
+            ditto -c -k --sequesterRsrc --keepParent "$app" "release-assets/${app_name}-universal-macos.app.zip"
+          done < <(find src-tauri/target/universal-apple-darwin/release/bundle -type d -name '*.app')
+
+          ls -la release-assets
+
+      - name: collect Windows release assets
+        if: startsWith(github.ref, 'refs/tags/v') && matrix.platform == 'windows-latest'
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory -Force -Path release-assets | Out-Null
+          Get-ChildItem -Path src-tauri/target/release/bundle -Recurse -File -Include *.msi,*.exe |
+            Copy-Item -Destination release-assets -Force
+          Get-ChildItem release-assets
+
+      - name: upload bundles to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG_NAME: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          shopt -s nullglob
+          assets=(release-assets/*)
+
+          if [ ${#assets[@]} -eq 0 ]; then
+            echo "No release assets were collected."
+            exit 1
+          fi
+
+          for attempt in {1..30}; do
+            if gh release view "$TAG_NAME" >/dev/null 2>&1; then
+              break
+            fi
+            sleep 10
+          done
+
+          if ! gh release view "$TAG_NAME" >/dev/null 2>&1; then
+            gh release create "$TAG_NAME" --title "$TAG_NAME" --generate-notes
+          fi
+
+          gh release upload "$TAG_NAME" "${assets[@]}" --clobber

@@ -1,8 +1,8 @@
 import { createFileRoute, Link, redirect } from '@tanstack/react-router'
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { api } from '@/api'
-import { authApi } from '@/lib/auth'
+import { authApi, isDesktopMode } from '@/lib/auth'
 
 export const Route = createFileRoute('/settings')({
   beforeLoad: async () => {
@@ -15,21 +15,34 @@ export const Route = createFileRoute('/settings')({
 
 function SettingsPage() {
   const { t } = useTranslation()
-  const [user, setUser] = useState<{ name: string; email: string } | null>(null)
+  const desktopMode = isDesktopMode()
+  const [user, setUser] = useState<{ name: string, email: string } | null>(null)
   const [profileName, setProfileName] = useState('')
   const [currentPassword, setCurrentPassword] = useState('')
   const [newPassword, setNewPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
-  const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null)
   const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
-    const userData = authApi.getUser()
-    if (userData) {
-      setUser(userData)
-      setProfileName(userData.name)
+    const loadUser = async () => {
+      try {
+        const userData = desktopMode ? await authApi.getCurrentUser() : authApi.getUser()
+        if (userData) {
+          setUser(userData)
+          setProfileName(userData.name)
+        }
+      }
+      catch {
+        const userData = authApi.getUser()
+        if (userData) {
+          setUser(userData)
+          setProfileName(userData.name)
+        }
+      }
     }
-  }, [])
+    loadUser()
+  }, [desktopMode])
 
   const handleSave = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -45,7 +58,7 @@ function SettingsPage() {
       }
 
       // 2. Update Password if fields are filled
-      if (currentPassword || newPassword || confirmPassword) {
+      if (!desktopMode && (currentPassword || newPassword || confirmPassword)) {
         if (newPassword !== confirmPassword) {
           throw new Error(t('settings.passwords_dont_match'))
         }
@@ -85,11 +98,13 @@ function SettingsPage() {
         </div>
 
         {message && (
-          <div className={`mb-8 p-4 rounded-2xl border ${
-            message.type === 'success'
-              ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-200'
-              : 'bg-rose-500/20 border-rose-500/50 text-rose-200'
-          } backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300`}>
+          <div
+            className={`mb-8 p-4 rounded-2xl border ${
+              message.type === 'success'
+                ? 'bg-emerald-500/20 border-emerald-500/50 text-emerald-200'
+                : 'bg-rose-500/20 border-rose-500/50 text-rose-200'
+            } backdrop-blur-xl animate-in fade-in slide-in-from-top-4 duration-300`}
+          >
             {message.text}
           </div>
         )}
@@ -129,46 +144,48 @@ function SettingsPage() {
               </div>
 
               {/* Password Section */}
-              <div className="space-y-6 pt-6 border-t border-white/10">
-                <h2 className="text-xl font-bold text-white flex items-center gap-3">
-                  <span className="w-1.5 h-6 bg-purple-500 rounded-full" />
-                  {t('settings.change_password')}
-                </h2>
-                <div className="grid grid-cols-1 gap-6">
-                  <div>
-                    <label className="block text-sm font-medium text-white/60 mb-2">{t('settings.current_password')}</label>
-                    <input
-                      type="password"
-                      value={currentPassword}
-                      onChange={e => setCurrentPassword(e.target.value)}
-                      className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                      placeholder={t('settings.current_password_placeholder')}
-                    />
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {!desktopMode && (
+                <div className="space-y-6 pt-6 border-t border-white/10">
+                  <h2 className="text-xl font-bold text-white flex items-center gap-3">
+                    <span className="w-1.5 h-6 bg-purple-500 rounded-full" />
+                    {t('settings.change_password')}
+                  </h2>
+                  <div className="grid grid-cols-1 gap-6">
                     <div>
-                      <label className="block text-sm font-medium text-white/60 mb-2">{t('settings.new_password')}</label>
+                      <label className="block text-sm font-medium text-white/60 mb-2">{t('settings.current_password')}</label>
                       <input
                         type="password"
-                        value={newPassword}
-                        onChange={e => setNewPassword(e.target.value)}
+                        value={currentPassword}
+                        onChange={e => setCurrentPassword(e.target.value)}
                         className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                        placeholder={t('settings.new_password_placeholder')}
+                        placeholder={t('settings.current_password_placeholder')}
                       />
                     </div>
-                    <div>
-                      <label className="block text-sm font-medium text-white/60 mb-2">{t('settings.confirm_new_password')}</label>
-                      <input
-                        type="password"
-                        value={confirmPassword}
-                        onChange={e => setConfirmPassword(e.target.value)}
-                        className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
-                        placeholder={t('settings.confirm_new_password_placeholder')}
-                      />
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                      <div>
+                        <label className="block text-sm font-medium text-white/60 mb-2">{t('settings.new_password')}</label>
+                        <input
+                          type="password"
+                          value={newPassword}
+                          onChange={e => setNewPassword(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                          placeholder={t('settings.new_password_placeholder')}
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-white/60 mb-2">{t('settings.confirm_new_password')}</label>
+                        <input
+                          type="password"
+                          value={confirmPassword}
+                          onChange={e => setConfirmPassword(e.target.value)}
+                          className="w-full bg-white/5 border border-white/10 rounded-xl px-4 py-3 text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50 transition-all"
+                          placeholder={t('settings.confirm_new_password_placeholder')}
+                        />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
+              )}
 
               <div className="pt-6">
                 <button
